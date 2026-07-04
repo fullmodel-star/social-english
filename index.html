@@ -1,0 +1,857 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#db2777">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="社交英文">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>社交英文</title>
+
+<style>
+:root{
+  --sky:#db2777; --sky2:#f472b6; --sky3:#fbcfe8; --deep:#be185d;
+  --bg:#fdf2f8; --card:#ffffff; --ink:#0f172a; --sub:#64748b; --line:#e2e8f0;
+  --good:#10b981; --bad:#ef4444; --gold:#f59e0b; --sos:#e11d48; --shadow:0 6px 22px rgba(2,132,199,.12);
+  --r:18px; --fs:1;
+}
+html[data-theme=dark]{
+  --bg:#0b1220; --card:#131c2e; --ink:#e8eefc; --sub:#94a3b8; --line:#233047;
+  --sky:#f472b6; --deep:#fbcfe8; --shadow:0 6px 22px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{
+  font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  background:var(--bg); color:var(--ink);
+  padding-bottom:calc(76px + env(safe-area-inset-bottom));
+  overscroll-behavior-y:contain; font-size:calc(16px * var(--fs));
+}
+body.big{--fs:1.22}
+h1,h2,h3,p{margin:0}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.hidden{display:none!important}
+
+.topbar{position:sticky;top:0;z-index:40;background:linear-gradient(135deg,var(--sky),var(--sky2));
+  color:#fff;padding:calc(env(safe-area-inset-top) + 12px) 0 12px;box-shadow:0 4px 16px rgba(2,132,199,.25)}
+.topbar .row,.topbar .stats{max-width:640px;width:100%;margin-left:auto;margin-right:auto;padding-left:14px;padding-right:14px;box-sizing:border-box}
+.topbar .row{display:flex;align-items:center;gap:10px}
+.topbar h1{font-size:1.2rem;font-weight:800;letter-spacing:.5px;flex:1}
+.chip{background:rgba(255,255,255,.22);border-radius:999px;padding:5px 11px;font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:5px}
+.iconbtn{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:18px;flex:none}
+.stats{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.stats .chip{background:rgba(255,255,255,.16)}
+
+.wrap{max-width:640px;margin:0 auto;padding:14px}
+.section-title{font-size:.88rem;font-weight:800;color:var(--sub);margin:18px 4px 10px;letter-spacing:.5px}
+
+.banner{background:linear-gradient(135deg,#fff7ed,#ffedd5);border-radius:var(--r);padding:15px 16px;
+  display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);margin-bottom:8px;border:1px solid #fde3c4}
+html[data-theme=dark] .banner{background:linear-gradient(135deg,#3a2a12,#2a1f10);border-color:#4a3618}
+.banner .big{font-size:30px}
+.banner .t{flex:1}
+.banner .t b{font-size:1rem}
+.banner .t small{color:var(--sub);font-size:.78rem}
+.banner .go{background:var(--gold);color:#fff;font-weight:800;padding:9px 15px;border-radius:12px;font-size:.88rem;white-space:nowrap}
+.banner.rev{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#bfdbfe}
+html[data-theme=dark] .banner.rev{background:linear-gradient(135deg,#122036,#0f1a2e);border-color:#1e3a5f}
+.banner.rev .go{background:var(--sky)}
+.banner.sos{background:linear-gradient(135deg,#fff1f2,#ffe4e6);border-color:#fecdd3}
+html[data-theme=dark] .banner.sos{background:linear-gradient(135deg,#3a1220,#2a0f18);border-color:#5a1a2a}
+.banner.sos .go{background:var(--sos)}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.scard{background:var(--card);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);position:relative;overflow:hidden;text-align:left;transition:transform .1s}
+.scard:active{transform:scale(.97)}
+.scard .ico{font-size:30px;line-height:1}
+.scard .nm{font-weight:800;font-size:.95rem;margin-top:8px}
+.scard .en{font-size:.68rem;color:var(--sub);margin-top:1px}
+.scard .desc{font-size:.72rem;color:var(--sub);margin-top:6px;line-height:1.35;min-height:31px}
+.pbar{height:6px;border-radius:99px;background:var(--line);margin-top:10px;overflow:hidden}
+.pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--sky),var(--sky2));border-radius:99px;transition:width .4s}
+.scard .pct{position:absolute;top:12px;right:12px;font-size:.68rem;font-weight:800;color:var(--sky)}
+.scard .done-badge{position:absolute;top:10px;right:10px;font-size:18px}
+
+.back{display:flex;align-items:center;gap:6px;font-weight:700;color:var(--sky);font-size:.95rem;padding:4px 0}
+.detail-head{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);margin:8px 0 4px;text-align:center}
+.detail-head .ico{font-size:44px}
+.detail-head h2{font-size:1.25rem;font-weight:800;margin-top:4px}
+.detail-head .en{color:var(--sub);font-size:.82rem}
+.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.mode{background:var(--card);border-radius:14px;padding:11px 4px;box-shadow:var(--shadow);text-align:center;transition:transform .1s}
+.mode:active{transform:scale(.95)}
+.mode .mi{font-size:21px}
+.mode .ml{font-size:.68rem;font-weight:700;margin-top:4px;line-height:1.2}
+
+.pitem{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:9px;display:flex;gap:11px;align-items:flex-start}
+.pitem.sos-item{border-left:4px solid var(--sos)}
+.pitem .body{flex:1;min-width:0}
+.pitem .en{font-weight:700;font-size:.97rem;line-height:1.35}
+.pitem .zh{color:var(--sub);font-size:.85rem;margin-top:3px}
+.pitem .homo{color:var(--sos);font-size:.8rem;margin-top:2px;font-weight:600}
+.pitem .tip{color:var(--sky);font-size:.75rem;margin-top:4px;background:rgba(14,165,233,.08);padding:3px 8px;border-radius:8px;display:inline-block}
+.pitem .metarow{display:flex;gap:6px;align-items:center;margin-top:5px;flex-wrap:wrap}
+.lv{font-size:.62rem;font-weight:800;padding:2px 6px;border-radius:6px;color:#fff}
+.lv1{background:#22c55e}.lv2{background:#f59e0b}.lv3{background:#ef4444}
+.stars{font-size:.68rem;letter-spacing:1px;color:var(--gold)}
+.pitem .acts{display:flex;flex-direction:column;gap:8px}
+.rbtn{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:17px;background:var(--bg);border:1px solid var(--line)}
+.rbtn.fav.on{color:var(--gold);background:rgba(245,158,11,.12);border-color:transparent}
+.shadowline{font-size:1.35rem;font-weight:800;line-height:1.55;margin:10px 0;text-align:center}
+.wok{color:var(--good)}
+.wmiss{color:var(--bad);text-decoration:underline;text-decoration-style:wavy;text-underline-offset:3px}
+.misschip{background:rgba(239,68,68,.1);color:var(--bad);border:1px solid var(--bad);border-radius:9px;padding:3px 9px;margin:3px 3px 0;font-size:.8rem;font-weight:700;display:inline-block}
+.fbnote{font-size:.72rem;opacity:.68;margin-top:7px;line-height:1.4}
+.keyok{color:var(--good);font-weight:700}
+
+.tagbar{display:flex;gap:7px;overflow-x:auto;padding:4px 2px 10px;-webkit-overflow-scrolling:touch}
+.tagbar::-webkit-scrollbar{display:none}
+.tg{white-space:nowrap;font-size:.82rem;font-weight:700;padding:6px 13px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--sub)}
+.tg.on{background:var(--sky);color:#fff;border-color:transparent}
+
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 16px rgba(0,0,0,.05)}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.68rem;color:var(--sub);padding:5px 0;font-weight:700}
+.nav button .ni{font-size:20px}
+.nav button.on{color:var(--sky)}
+.nav button.sosnav.on{color:var(--sos)}
+
+.overlay{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;animation:slideup .25s}
+@keyframes slideup{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.ovhead{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 12px) 16px 10px}
+.ovhead .x{font-size:24px;width:34px}
+.ovprog{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.ovprog>i{display:block;height:100%;background:linear-gradient(90deg,var(--sky),var(--sky2));width:0;transition:width .3s}
+.ovhead .cnt{font-weight:800;font-size:.85rem;color:var(--sub)}
+.ovbody{flex:1;overflow-y:auto;padding:10px 18px 20px;display:flex;flex-direction:column}
+.ovfoot{padding:12px 18px calc(16px + env(safe-area-inset-bottom));display:flex;gap:10px}
+.overlay>.ovhead,.overlay>.ovbody,.overlay>.ovfoot{max-width:680px;width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
+.pbtn{flex:1;padding:15px;border-radius:15px;font-weight:800;font-size:1rem;background:var(--sky);color:#fff;box-shadow:var(--shadow)}
+.pbtn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.pbtn.good{background:var(--good)}.pbtn.bad{background:var(--bad)}
+.pbtn:disabled{opacity:.4}
+
+.flash{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:14px}
+.flash .card3d{background:var(--card);border-radius:24px;box-shadow:var(--shadow);padding:32px 24px;width:100%;min-height:220px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.flash .big-en{font-size:1.6rem;font-weight:800;line-height:1.35}
+.flash .big-zh{font-size:1.2rem;color:var(--sub)}
+.flash .homo2{font-size:1rem;color:var(--sos);font-weight:700}
+.flash .tip2{font-size:.85rem;color:var(--sky);background:rgba(14,165,233,.08);padding:7px 12px;border-radius:10px}
+.flash .wico{font-size:56px}
+.speak{background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;border-radius:99px;padding:12px 22px;font-weight:800;font-size:.95rem;display:inline-flex;gap:8px;align-items:center;box-shadow:var(--shadow)}
+.tapkuce{color:var(--sub);font-size:.82rem}
+
+.qword{font-size:1.5rem;font-weight:800;text-align:center;margin:12px 0 4px;line-height:1.4}
+.qsub{text-align:center;color:var(--sub);margin-bottom:16px;font-size:.88rem}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:15px;margin-bottom:11px;font-size:1rem;font-weight:600;text-align:left;transition:.15s;width:100%}
+.opt:active{transform:scale(.98)}
+.opt.ok{border-color:var(--good);background:rgba(16,185,129,.1);color:var(--good);font-weight:800}
+.opt.no{border-color:var(--bad);background:rgba(239,68,68,.1);color:var(--bad)}
+
+.teach{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px;margin-top:6px;border-left:4px solid var(--sky);animation:pop .2s}
+.teach .r{margin:5px 0;font-size:.95rem}
+.teach .r.wrong{color:var(--bad)}.teach .r.right{color:var(--good);font-weight:800}
+.teach .tipbox{background:rgba(14,165,233,.08);color:var(--sky);border-radius:10px;padding:9px 12px;margin-top:8px;font-size:.85rem}
+
+.scz-target{min-height:60px;background:var(--card);border:2px dashed var(--line);border-radius:14px;padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;margin-bottom:6px}
+.scz-target.err{border-color:var(--bad);animation:shake .35s}
+.scz-target.ok{border-color:var(--good)}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.scz-pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.tok{background:var(--sky);color:#fff;border-radius:11px;padding:9px 14px;font-size:1rem;font-weight:700;box-shadow:var(--shadow)}
+.tok.inpool{background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+
+.mic-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center}
+.mic{width:92px;height:92px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;font-size:38px;display:grid;place-items:center;box-shadow:0 10px 30px rgba(14,165,233,.4);transition:transform .15s}
+.mic.rec{animation:pulse 1s infinite;background:linear-gradient(135deg,var(--bad),#f87171)}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.heard{font-size:.9rem;color:var(--sub);min-height:22px}
+.scorebig{font-size:3.1rem;font-weight:900}
+.w-good{color:var(--good)}.w-mid{color:var(--gold)}.w-bad{color:var(--bad)}
+
+.chat{flex:1;display:flex;flex-direction:column;gap:10px;padding:6px 0}
+.bubble{max-width:82%;padding:11px 14px;border-radius:16px;font-size:.97rem;line-height:1.4;box-shadow:var(--shadow);animation:pop .2s}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+.bubble .z{font-size:.78rem;opacity:.75;margin-top:3px}
+.bubble.npc{background:var(--card);align-self:flex-start;border-bottom-left-radius:5px}
+.bubble.you{background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+.roleask{text-align:center;color:var(--sub);font-size:.82rem;margin:6px 0}
+
+.patcard{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:22px;text-align:center}
+.patcard .frame{font-size:1.4rem;font-weight:800;line-height:1.5;margin-bottom:6px}
+.patcard .slot{color:var(--sky);border-bottom:2px dashed var(--sky)}
+.slotbtns{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:14px}
+.slotbtn{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 15px;font-weight:700;font-size:.95rem}
+.slotbtn.on{background:var(--sky);color:#fff;border-color:transparent}
+
+.toast{position:fixed;left:50%;top:22%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:14px;font-weight:800;z-index:100;box-shadow:var(--shadow);animation:pop .2s;max-width:86vw;text-align:center}
+.pop-heart{position:fixed;font-size:30px;z-index:120;pointer-events:none;animation:floatUp 1s ease-out forwards}
+@keyframes floatUp{to{transform:translateY(-90px) scale(1.6);opacity:0}}
+
+.searchbox{width:100%;padding:13px 16px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:1rem;box-shadow:var(--shadow)}
+.searchbox:focus{outline:2px solid var(--sky)}
+
+.prof{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
+.pill{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:11px 16px;font-weight:800;font-size:.95rem;display:flex;align-items:center;gap:8px}
+.pill.on{border-color:var(--sky);color:var(--sky);background:rgba(14,165,233,.08)}
+.bandsel{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:8px 0}
+.bandopt{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;text-align:left;box-shadow:var(--shadow)}
+.bandopt.on{border-color:var(--sky);background:rgba(14,165,233,.06)}
+.bandopt b{font-size:.95rem}.bandopt small{display:block;color:var(--sub);font-size:.72rem;margin-top:3px;line-height:1.3}
+.setrow{background:var(--card);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.setrow .lab b{font-size:.95rem}.setrow .lab small{color:var(--sub);font-size:.78rem;display:block;margin-top:2px}
+.switch{width:52px;height:30px;border-radius:99px;background:var(--line);position:relative;transition:.2s;flex:none}
+.switch.on{background:var(--sky)}
+.switch>i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.switch.on>i{left:25px}
+.stepper{display:flex;align-items:center;gap:12px}
+.stepper button{width:34px;height:34px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:20px;font-weight:800}
+.emptybox{text-align:center;color:var(--sub);padding:40px 20px;font-size:.88rem}
+.emptybox .e{font-size:40px}
+
+.badges{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0}
+.badge{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:12px 4px;text-align:center;opacity:.35;filter:grayscale(1)}
+.badge.got{opacity:1;filter:none}
+.badge .bi{font-size:26px}
+.badge .bn{font-size:.62rem;font-weight:700;margin-top:4px;color:var(--sub)}
+
+.refcard{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:14px 16px;margin-bottom:11px}
+.refcard h3{font-size:1rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.refrow{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.85rem;align-items:baseline}
+.refrow:last-child{border:none}
+.refrow .flag{font-size:1.1rem;flex:none}
+.refrow .rc{font-weight:800;flex:none;min-width:64px}
+.refrow .rt{color:var(--sub);font-size:.8rem}
+#installBar:empty{display:none}
+#installBar{margin:12px 0}
+#installBar .ib{display:block;width:100%;border:0;border-radius:14px;padding:13px 15px;font-size:15px;font-weight:800;cursor:pointer;background:#4f46e5;color:#fff;box-shadow:0 6px 16px rgba(79,70,229,.32)}
+#installBar .ib.sec{background:#eef0fe;color:#4f46e5}
+#installBar .tip{background:#fff7e6;border:1px solid #ffe0a3;border-radius:14px;padding:13px;font-size:13px;line-height:1.85;color:#5a4a1a}
+#installBar .x{display:inline-block;margin-top:6px;color:#4f46e5;font-weight:800;cursor:pointer}
+</style>
+
+<div class="topbar">
+  <div class="row">
+    <div class="iconbtn" onclick="go('profile')">👤</div>
+    <h1>💬 社交英文</h1>
+    <div class="chip" id="profChip" onclick="go('profile')">👤 —</div>
+  </div>
+  <div class="stats">
+    <div class="chip">🔥 <span id="stStreak">0</span> 天</div>
+    <div class="chip">⭐ <span id="stStars">0</span></div>
+    <div class="chip">🎯 <span id="stToday">0</span>/<span id="stGoal">20</span></div>
+    <div class="chip">🔁 待複習 <span id="stDue">0</span></div>
+  </div>
+</div>
+
+<div id="view-home" class="wrap">
+  <div id="dailyBanner"></div>
+  <div id="installBar"></div>
+  <div class="section-title" id="gridTitle">🗺️ 情境關卡</div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div id="view-detail" class="wrap hidden"></div>
+
+<div id="view-sos" class="wrap hidden"></div>
+
+<div id="view-search" class="wrap hidden">
+  <div class="section-title">🔎 全句庫搜尋（隨查隨用）</div>
+  <input class="searchbox" id="searchInput" placeholder="輸入中文或英文，例：退稅、window seat" oninput="doSearch(this.value)">
+  <div id="searchRes" style="margin-top:12px"></div>
+</div>
+
+<div id="view-fav" class="wrap hidden">
+  <div class="section-title">⭐ 我的收藏</div>
+  <div id="favList"></div>
+</div>
+
+<div id="view-profile" class="wrap hidden">
+  <div class="section-title">👨‍👩‍👧‍👦 家庭成員</div>
+  <div class="prof" id="profList"></div>
+  <button class="pbtn ghost" style="margin-top:4px" onclick="addProfile()">＋ 新增成員</button>
+
+  <div class="section-title">🎚️ 使用模式（依成員程度）</div>
+  <div class="bandsel" id="bandSel"></div>
+
+  <div class="section-title">🏅 成就徽章</div>
+  <div class="badges" id="badges"></div>
+
+  <div class="section-title">⚙️ 設定</div>
+  <div class="setrow"><div class="lab"><b>每日目標</b><small>每天要練幾張卡</small></div>
+    <div class="stepper"><button onclick="setGoal(-5)">−</button><b id="goalView">20</b><button onclick="setGoal(5)">＋</button></div></div>
+  <div class="setrow"><div class="lab"><b>發音速度</b><small>語音朗讀語速</small></div>
+    <div class="stepper"><button onclick="setRate(-.1)">−</button><b id="rateView">1.0×</b><button onclick="setRate(.1)">＋</button></div></div>
+  <div class="setrow"><div class="lab"><b>大字模式</b><small>字體放大，長輩好讀</small></div>
+    <div class="switch" id="swBig" onclick="toggleBig()"><i></i></div></div>
+  <div class="setrow"><div class="lab"><b>深色模式</b><small>夜間護眼</small></div>
+    <div class="switch" id="swDark" onclick="toggleDark()"><i></i></div></div>
+  <div class="setrow"><div class="lab"><b>顯示中文</b><small>學習卡是否顯示中文</small></div>
+    <div class="switch on" id="swZh" onclick="toggleZh()"><i></i></div></div>
+
+  <div class="section-title">📊 這位成員的進度</div>
+  <div id="progSummary"></div>
+  <button class="pbtn ghost" style="margin-top:14px;color:var(--bad)" onclick="resetProgress()">🗑️ 重設此成員進度</button>
+  <p style="text-align:center;color:var(--sub);font-size:.72rem;margin-top:18px">離線可用 · 資料存在本機 · 全家共用一支手機也各自記錄</p>
+</div>
+
+<div class="nav">
+  <button id="nav-home" class="on" onclick="go('home')"><span class="ni">🏠</span>首頁</button>
+  <button id="nav-review" onclick="startReview()"><span class="ni">🔁</span>複習</button>
+  <button id="nav-sos" class="sosnav" onclick="go('sos')"><span class="ni">🆘</span>救命</button>
+  <button id="nav-search" onclick="go('search')"><span class="ni">🔎</span>搜尋</button>
+  <button id="nav-profile" onclick="go('profile')"><span class="ni">👤</span>我的</button>
+</div>
+
+<div id="overlayMount"></div>
+
+<script id="REF">
+window.__REF__ = {"emergency":[],"tipping":[]};
+window.__SCENARIOS__ = [{"id": "greetings", "icon": "👋", "title": "打招呼寒暄", "titleEn": "Greetings", "desc": "問候、近況、道別", "country": "US", "words": [{"en": "Hi / Hello", "zh": "嗨/你好", "ico": "👋"}, {"en": "morning", "zh": "早上", "ico": "🌅"}, {"en": "how", "zh": "如何", "ico": "❓"}, {"en": "fine / good", "zh": "還不錯", "ico": "👍"}, {"en": "busy", "zh": "忙碌", "ico": "🏃"}, {"en": "long time", "zh": "好久", "ico": "⏳"}, {"en": "bye", "zh": "再見", "ico": "🙋"}, {"en": "take care", "zh": "保重", "ico": "❤️"}], "patterns": [{"en": "Good ___!", "zh": "___ 好！", "slots": ["morning", "afternoon", "evening"]}, {"en": "How's your ___ going?", "zh": "你的 ___ 過得如何？", "slots": ["day", "week", "trip"]}, {"en": "It was nice ___ you!", "zh": "很高興 ___ 你！", "slots": ["seeing", "meeting", "talking to"]}], "phrases": [{"en": "Hi! How are you?", "zh": "嗨！你好嗎？", "tag": "基本問候", "level": 1, "survival": true, "homophone": "嗨！好 阿 U？"}, {"en": "Good morning!", "zh": "早安！", "tag": "早晨問候", "level": 1, "survival": false, "homophone": "古得 摸寧！"}, {"en": "I'm fine, thanks. And you?", "zh": "我很好，謝謝，你呢？", "tag": "回應問候", "level": 1, "survival": true, "homophone": "愛姆 凡恩，山克斯，安 U？"}, {"en": "Not bad, thanks for asking.", "zh": "還不錯，謝謝關心。", "tag": "回應問候", "level": 2, "survival": false}, {"en": "Long time no see!", "zh": "好久不見！", "tag": "久別重逢", "level": 1, "survival": true, "homophone": "龍 太姆 諾 西！"}, {"en": "How have you been?", "zh": "你最近過得怎麼樣？", "tag": "問近況", "level": 1, "survival": true, "homophone": "好 黑福 U 賓？"}, {"en": "What's new with you?", "zh": "你最近有什麼新鮮事嗎？", "tag": "問近況", "level": 2, "survival": false}, {"en": "I've been pretty busy lately.", "zh": "我最近滿忙的。", "tag": "回答近況", "level": 2, "survival": false}, {"en": "Nice to meet you.", "zh": "很高興認識你。", "tag": "初次見面", "level": 1, "survival": true, "homophone": "耐斯 兔 密特 U"}, {"en": "Nice to meet you too.", "zh": "我也很高興認識你。", "tag": "初次見面", "level": 1, "survival": false}, {"en": "How's it going?", "zh": "最近如何？", "tag": "輕鬆問候", "level": 2, "survival": false, "tip": "朋友間常用的輕鬆問法，比 How are you 更口語"}, {"en": "May I ask your name?", "zh": "請問您貴姓大名？", "tag": "詢問姓名", "level": 2, "survival": false}, {"en": "It was nice talking to you.", "zh": "很高興跟你聊天。", "tag": "道別前", "level": 2, "survival": false}, {"en": "I have to go now, see you later!", "zh": "我得先走了，晚點見！", "tag": "道別", "level": 1, "survival": true, "homophone": "愛 黑夫 兔 溝 惱，西 U 累特"}, {"en": "Take care!", "zh": "保重！", "tag": "道別", "level": 1, "survival": true, "homophone": "貼可 卡"}, {"en": "Let's catch up again soon.", "zh": "我們再找時間聊聊吧。", "tag": "約定再聯絡", "level": 3, "survival": false, "tip": "catch up = 敘舊、聊近況"}], "dialogue": {"title": "巷口偶遇老朋友", "youRole": "你（路人甲）", "npcRole": "老朋友 Mark", "lines": [{"who": "npc", "en": "Hey! Is that you? Long time no see!", "zh": "嘿！這不是你嗎？好久不見！"}, {"who": "you", "en": "Oh my gosh, Mark! How have you been?", "zh": "天啊，Mark！你最近過得怎麼樣？"}, {"who": "npc", "en": "Pretty good, thanks! How about you?", "zh": "還不錯，謝謝！你呢？"}, {"who": "you", "en": "Not bad. I've been pretty busy with work lately.", "zh": "還可以。我最近工作滿忙的。"}, {"who": "npc", "en": "I hear you. What's new with you these days?", "zh": "我懂。你最近有什麼新鮮事嗎？"}, {"who": "you", "en": "Not much, just the usual. How's your family doing?", "zh": "沒什麼特別的，老樣子。你家人都好嗎？"}, {"who": "npc", "en": "They're doing great, thanks for asking!", "zh": "他們都很好，謝謝關心！"}, {"who": "you", "en": "That's good to hear. We should catch up again soon.", "zh": "太好了。我們該再找時間聊聊。"}, {"who": "npc", "en": "Definitely! I have to run now, though.", "zh": "當然！不過我現在得先走了。"}, {"who": "you", "en": "No problem. It was so nice seeing you!", "zh": "沒問題。很高興見到你！"}, {"who": "npc", "en": "You too! Take care, see you soon!", "zh": "我也是！保重，晚點見！"}]}}, {"id": "self-intro", "icon": "🙋", "title": "自我介紹", "titleEn": "Introductions", "desc": "介紹自己、認識新朋友、交換聯絡", "country": "US", "words": [{"en": "introduce", "zh": "介紹", "ico": "🙋"}, {"en": "name", "zh": "名字", "ico": "📛"}, {"en": "nice to meet you", "zh": "很高興認識你", "ico": "🤝"}, {"en": "from", "zh": "來自", "ico": "🌍"}, {"en": "contact", "zh": "聯絡方式", "ico": "📱"}, {"en": "number", "zh": "電話號碼", "ico": "🔢"}, {"en": "work", "zh": "工作", "ico": "💼"}, {"en": "keep in touch", "zh": "保持聯絡", "ico": "💌"}], "patterns": [{"en": "Hi, I'm ___.", "zh": "嗨,我是___。", "slots": ["Amy", "John Chen", "Mr. Wang"]}, {"en": "I'm from ___.", "zh": "我來自___。", "slots": ["Taiwan", "Taipei", "Kaohsiung"]}, {"en": "Can I get your ___?", "zh": "可以給我你的___嗎?", "slots": ["phone number", "email", "Line ID"]}], "phrases": [{"en": "Hi, I'm Amy.", "zh": "嗨,我是艾咪。", "tag": "開場自介", "level": 1, "survival": true, "homophone": "嗨 愛母 艾咪", "tip": "最基本開場白,配上微笑和眼神接觸"}, {"en": "Nice to meet you.", "zh": "很高興認識你。", "tag": "初次見面", "level": 1, "survival": true, "homophone": "耐斯 兔 密特 語"}, {"en": "What's your name?", "zh": "你叫什麼名字?", "tag": "詢問姓名", "level": 1, "survival": true, "homophone": "華資 幽兒 內姆"}, {"en": "I'm from Taiwan.", "zh": "我來自台灣。", "tag": "介紹國籍", "level": 1, "survival": true, "homophone": "愛姆 佛萊姆 台灣"}, {"en": "How do you spell that?", "zh": "那個字怎麼拼?", "tag": "確認拼字", "level": 2, "survival": false, "tip": "聽不懂對方名字時很實用"}, {"en": "Where are you from?", "zh": "你來自哪裡?", "tag": "詢問來歷", "level": 1, "survival": false, "homophone": "位兒 阿 幽 佛萊姆"}, {"en": "This is my first time here.", "zh": "這是我第一次來這裡。", "tag": "開場話題", "level": 2, "survival": false}, {"en": "What do you do for a living?", "zh": "你的工作是什麼?", "tag": "詢問職業", "level": 2, "survival": false, "tip": "比 What's your job 更自然道地"}, {"en": "I work in marketing.", "zh": "我從事行銷工作。", "tag": "回答職業", "level": 2, "survival": false}, {"en": "I'm here on vacation.", "zh": "我在這裡度假。", "tag": "說明目的", "level": 2, "survival": false}, {"en": "Can I get your phone number?", "zh": "可以給我你的電話嗎?", "tag": "交換聯絡", "level": 2, "survival": true, "tip": "熟悉後再問,語氣輕鬆自然"}, {"en": "Do you have Line or WhatsApp?", "zh": "你有Line或WhatsApp嗎?", "tag": "社群軟體", "level": 2, "survival": false}, {"en": "Let's keep in touch.", "zh": "我們保持聯絡吧。", "tag": "道別互動", "level": 2, "survival": true, "homophone": "雷資 基普 印 塔取"}, {"en": "It was great talking to you.", "zh": "很高興跟你聊天。", "tag": "結束對話", "level": 2, "survival": false}, {"en": "I hope to see you again soon.", "zh": "希望很快能再見到你。", "tag": "友善道別", "level": 3, "survival": false}, {"en": "Feel free to add me on social media.", "zh": "歡迎在社群媒體上加我。", "tag": "邀請聯繫", "level": 3, "survival": false}], "dialogue": {"title": "派對上認識新朋友", "youRole": "你(遊客/參加者)", "npcRole": "Mark(當地朋友的朋友)", "lines": [{"who": "npc", "en": "Hi there! I don't think we've met. I'm Mark.", "zh": "嗨!我們好像沒見過。我是馬克。"}, {"who": "you", "en": "Hi Mark, I'm Amy. Nice to meet you.", "zh": "嗨馬克,我是艾咪。很高興認識你。"}, {"who": "npc", "en": "Nice to meet you too. Where are you from, Amy?", "zh": "我也很高興認識你。艾咪,妳來自哪裡?"}, {"who": "you", "en": "I'm from Taiwan. I'm here on vacation with my friend.", "zh": "我來自台灣,和朋友一起來這裡度假。"}, {"who": "npc", "en": "That's cool! How do you like the city so far?", "zh": "太酷了!你覺得這個城市怎麼樣?"}, {"who": "you", "en": "I love it. The food here is amazing. What do you do for a living, Mark?", "zh": "我很喜歡,這裡的食物超棒。馬克,你的工作是什麼?"}, {"who": "npc", "en": "I work in graphic design. I actually just moved here last year.", "zh": "我從事平面設計,其實去年才搬來這裡。"}, {"who": "you", "en": "That's great. It was really nice talking to you.", "zh": "太好了。很高興跟你聊天。"}, {"who": "npc", "en": "You too! Can I get your number? Let's keep in touch.", "zh": "我也是!可以給我妳的電話嗎?我們保持聯絡吧。"}, {"who": "you", "en": "Sure, here it is. Feel free to text me anytime.", "zh": "當然,給你。歡迎隨時傳訊息給我。"}]}}, {"id": "small-talk", "icon": "💬", "title": "閒聊破冰", "titleEn": "Small Talk", "desc": "天氣、週末、興趣、工作", "country": "US", "words": [{"en": "weather", "zh": "天氣", "ico": "☀️"}, {"en": "weekend", "zh": "週末", "ico": "📅"}, {"en": "hobby", "zh": "興趣/嗜好", "ico": "🎨"}, {"en": "work", "zh": "工作", "ico": "💼"}, {"en": "weather forecast", "zh": "天氣預報", "ico": "🌤️"}, {"en": "plans", "zh": "計畫", "ico": "📝"}, {"en": "busy", "zh": "忙碌", "ico": "⏰"}, {"en": "relax", "zh": "放鬆", "ico": "🛋️"}], "patterns": [{"en": "How's the ___ going?", "zh": "___ 進行得如何？", "slots": ["weather", "weekend", "work", "project"]}, {"en": "Do you have any plans for ___?", "zh": "你 ___ 有什麼計畫嗎？", "slots": ["the weekend", "tonight", "the holidays", "tomorrow"]}, {"en": "I really enjoy ___ in my free time.", "zh": "我閒暇時很喜歡 ___。", "slots": ["hiking", "reading", "cooking", "watching movies"]}], "phrases": [{"en": "Nice weather today, isn't it?", "zh": "今天天氣真好，對吧？", "tag": "開場白", "level": 1, "survival": true, "homophone": "耐斯 威惹 特得 依zn特 依特"}, {"en": "How's it going?", "zh": "你最近好嗎？", "tag": "打招呼", "level": 1, "survival": true, "homophone": "好子 依特 勾引"}, {"en": "Did you have a good weekend?", "zh": "你週末過得好嗎？", "tag": "問候", "level": 1, "survival": true, "homophone": "低啾 黑夫 阿 古的 威肯特"}, {"en": "What do you do for work?", "zh": "你是做什麼工作的？", "tag": "問工作", "level": 1, "survival": true, "homophone": "華特 度 尤 度 佛 沃克"}, {"en": "So, what do you do for fun?", "zh": "那你平常都做些什麼消遣呢？", "tag": "問興趣", "level": 2, "survival": false, "homophone": ""}, {"en": "It's been really hot lately, hasn't it?", "zh": "最近真的很熱，對吧？", "tag": "聊天氣", "level": 2, "survival": false, "homophone": ""}, {"en": "I heard it might rain later.", "zh": "我聽說等一下可能會下雨。", "tag": "天氣預報", "level": 2, "survival": false, "homophone": ""}, {"en": "Do you have any plans for the weekend?", "zh": "你這週末有什麼計畫嗎？", "tag": "問計畫", "level": 2, "survival": true, "homophone": "", "tip": "很自然的延續話題句"}, {"en": "I'm just going to relax at home.", "zh": "我打算就在家放鬆一下。", "tag": "回答計畫", "level": 2, "survival": false, "homophone": ""}, {"en": "I really enjoy hiking on the weekends.", "zh": "我週末很喜歡去健行。", "tag": "分享興趣", "level": 2, "survival": false, "homophone": ""}, {"en": "That sounds like fun!", "zh": "聽起來很有趣！", "tag": "回應", "level": 1, "survival": false, "homophone": "類特 桑z 賴克 放"}, {"en": "How long have you been working here?", "zh": "你在這裡工作多久了？", "tag": "深入問工作", "level": 3, "survival": false, "homophone": ""}, {"en": "Things have been pretty busy at work lately.", "zh": "最近工作一直挺忙的。", "tag": "聊工作近況", "level": 2, "survival": false, "homophone": ""}, {"en": "What do you like to do to unwind after work?", "zh": "你下班後喜歡做什麼放鬆一下？", "tag": "深入問興趣", "level": 3, "survival": false, "homophone": ""}, {"en": "Well, it was nice talking to you.", "zh": "跟你聊天很開心。", "tag": "收尾", "level": 2, "survival": true, "homophone": "威爾 依特 挖司 耐斯 透個因 兔 尤"}, {"en": "I should get going, but let's catch up again soon.", "zh": "我該走了，但我們很快再聊吧。", "tag": "道別", "level": 2, "survival": false, "homophone": ""}], "dialogue": {"title": "公園裡的閒聊", "youRole": "你（散步中）", "npcRole": "鄰居 Mark", "lines": [{"who": "npc", "en": "Hey! Nice weather today, isn't it?", "zh": "嗨！今天天氣真好，對吧？"}, {"who": "you", "en": "Yeah, perfect for a walk. How's it going, Mark?", "zh": "對啊，很適合散步。Mark，你最近好嗎？"}, {"who": "npc", "en": "Pretty good, thanks. Did you have a good weekend?", "zh": "還不錯，謝啦。你週末過得好嗎？"}, {"who": "you", "en": "It was great, actually. I went hiking with some friends.", "zh": "其實還蠻棒的，我跟幾個朋友去健行了。"}, {"who": "npc", "en": "That sounds like fun! I really enjoy hiking too, when I have time.", "zh": "聽起來很有趣！我有空的時候也很喜歡健行。"}, {"who": "you", "en": "So, what do you do for work these days?", "zh": "那你最近是做什麼工作的？"}, {"who": "npc", "en": "I'm a graphic designer. Things have been pretty busy lately.", "zh": "我是平面設計師，最近工作一直挺忙的。"}, {"who": "you", "en": "I bet. Do you have any plans for the weekend to relax?", "zh": "我猜也是。你這週末有計畫放鬆一下嗎？"}, {"who": "npc", "en": "Probably just going to relax at home and watch some movies.", "zh": "大概就在家放鬆，看看電影吧。"}, {"who": "you", "en": "Sounds nice. Well, it was great talking to you.", "zh": "聽起來不錯。跟你聊天很開心。"}, {"who": "npc", "en": "You too! Let's catch up again soon.", "zh": "我也是！我們很快再聊吧。"}, {"who": "you", "en": "Definitely. Have a good one!", "zh": "當然。祝你有美好的一天！"}]}}, {"id": "invite", "icon": "🎟️", "title": "邀約約人", "titleEn": "Invitations", "desc": "約吃飯看電影、回應、婉拒", "country": "US", "words": [{"en": "invite", "zh": "邀請", "ico": "💌"}, {"en": "available", "zh": "有空的", "ico": "🗓️"}, {"en": "plan", "zh": "計畫", "ico": "📝"}, {"en": "reschedule", "zh": "改期", "ico": "🔄"}, {"en": "treat", "zh": "請客", "ico": "🍽️"}, {"en": "raincheck", "zh": "改約下次", "ico": "☔"}, {"en": "hang out", "zh": "一起出去玩", "ico": "🚶"}, {"en": "RSVP", "zh": "回覆是否出席", "ico": "✅"}], "patterns": [{"en": "Do you want to ___ this weekend?", "zh": "這個週末想不想___？", "slots": ["grab dinner", "see a movie", "go hiking"]}, {"en": "I'm sorry, I can't make it ___, but how about ___?", "zh": "抱歉___不行，那___怎麼樣？", "slots": ["tonight / tomorrow", "Friday night / Saturday afternoon", "this week / next week"]}, {"en": "Let's meet at ___ around ___.", "zh": "我們___見面，大約___。", "slots": ["the restaurant / 7pm", "the theater / 6:30", "your place / noon"]}], "phrases": [{"en": "Are you free this weekend?", "zh": "你這個週末有空嗎？", "tag": "開場", "level": 1, "survival": true, "homophone": "阿 U 福力 利斯 위肯？"}, {"en": "Do you want to grab dinner with me?", "zh": "想不想跟我一起吃晚餐？", "tag": "約吃飯", "level": 1, "survival": true, "homophone": "賭 U 王特 兔 葛拉不 丁那 位斯 密？"}, {"en": "Would you like to see a movie tonight?", "zh": "今晚想不想去看電影？", "tag": "約電影", "level": 1, "survival": true, "homophone": "屋祝 U 賴克 兔 西 阿 木非 特耐？"}, {"en": "What time works for you?", "zh": "你什麼時間方便？", "tag": "詢問時間", "level": 1, "survival": false, "homophone": ""}, {"en": "I'd love to! What time should we meet?", "zh": "我很樂意！我們該幾點見面？", "tag": "答應邀約", "level": 2, "survival": true, "homophone": "愛的 拉夫 兔！華特 太母 秀 位 密？"}, {"en": "Sure, count me in.", "zh": "好啊，算我一份。", "tag": "答應邀約", "level": 2, "survival": false}, {"en": "Sounds great, I'm in.", "zh": "聽起來不錯，我要參加。", "tag": "答應邀約", "level": 2, "survival": false}, {"en": "I'm sorry, I already have plans that day.", "zh": "抱歉，那天我已經有安排了。", "tag": "婉拒", "level": 2, "survival": true, "tip": "婉拒時加原因較不失禮，可搭配下一句提出改期"}, {"en": "Can we take a raincheck?", "zh": "可以改約下次嗎？", "tag": "婉拒改期", "level": 2, "survival": true, "tip": "美式口語常用說法，表示這次不行但下次再約"}, {"en": "How about next Friday instead?", "zh": "改成下週五怎麼樣？", "tag": "提議改期", "level": 2, "survival": false}, {"en": "Let's meet at the restaurant around 7.", "zh": "我們約7點左右在餐廳見。", "tag": "約定地點", "level": 2, "survival": false}, {"en": "Should I make a reservation?", "zh": "我要不要先訂位？", "tag": "細節安排", "level": 3, "survival": false}, {"en": "It's my treat this time.", "zh": "這次我請客。", "tag": "請客", "level": 2, "survival": false}, {"en": "Let's split the bill.", "zh": "我們各付各的吧。", "tag": "付款方式", "level": 3, "survival": false}, {"en": "Can I bring a friend along?", "zh": "我可以帶一個朋友一起來嗎？", "tag": "詢問攜伴", "level": 3, "survival": false}, {"en": "Looking forward to seeing you then!", "zh": "到時候見，我很期待！", "tag": "收尾", "level": 1, "survival": true, "homophone": "路King 佛沃 兔 西英 U 電！"}], "dialogue": {"title": "約週末看電影吃飯", "youRole": "你", "npcRole": "朋友 Alex", "lines": [{"who": "npc", "en": "Hey! Are you free this weekend?", "zh": "嘿！你這個週末有空嗎？"}, {"who": "you", "en": "I think so. What's up?", "zh": "應該有空，怎麼了？"}, {"who": "npc", "en": "Do you want to see a movie and grab dinner with me on Saturday?", "zh": "星期六想不想跟我一起看電影再吃晚餐？"}, {"who": "you", "en": "I'd love to! What time should we meet?", "zh": "我很樂意！我們該幾點見面？"}, {"who": "npc", "en": "How about 5pm? We can catch the 6 o'clock show.", "zh": "下午5點怎麼樣？我們可以看6點那場。"}, {"who": "you", "en": "Sounds great. Where's the theater?", "zh": "聽起來不錯，電影院在哪裡？"}, {"who": "npc", "en": "The one downtown, next to that Italian restaurant.", "zh": "市中心那間，在義大利餐廳旁邊。"}, {"who": "you", "en": "Perfect, let's meet at the restaurant around 5.", "zh": "太好了，我們大約5點在餐廳見。"}, {"who": "npc", "en": "Actually, wait — I might have to work late on Saturday. Can we take a raincheck?", "zh": "等等，我星期六可能要加班，可以改約下次嗎？"}, {"who": "you", "en": "No problem, how about next Friday instead?", "zh": "沒問題，改成下週五怎麼樣？"}, {"who": "npc", "en": "That works for me!", "zh": "那對我來說可以！"}, {"who": "you", "en": "Great, looking forward to seeing you then!", "zh": "太好了，到時候見，我很期待！"}]}}, {"id": "compliment", "icon": "🌟", "title": "稱讚讚美", "titleEn": "Compliments", "desc": "讚美外表能力、回應稱讚", "country": "US", "words": [{"en": "compliment", "zh": "讚美", "ico": "👏"}, {"en": "gorgeous", "zh": "美極了", "ico": "😍"}, {"en": "talented", "zh": "有才華的", "ico": "🌟"}, {"en": "outfit", "zh": "整體穿搭", "ico": "👗"}, {"en": "flattered", "zh": "感到榮幸/受寵若驚", "ico": "☺️"}, {"en": "skill", "zh": "技能／本領", "ico": "💪"}, {"en": "appreciate", "zh": "感激", "ico": "🙏"}, {"en": "impressive", "zh": "令人印象深刻", "ico": "✨"}], "patterns": [{"en": "I love your ___.", "zh": "我好喜歡你的___。", "slots": ["hair", "shoes", "necklace"]}, {"en": "You're so good at ___.", "zh": "你___好厲害。", "slots": ["cooking", "singing", "this", "dancing"]}, {"en": "That's a really nice ___ you're wearing.", "zh": "你穿的這件___真好看。", "slots": ["jacket", "dress", "scarf"]}], "phrases": [{"en": "I love your dress!", "zh": "我好喜歡你的洋裝！", "tag": "稱讚穿著", "level": 1, "survival": true, "homophone": "愛 拉夫 幼兒 醉斯"}, {"en": "You look great today.", "zh": "你今天看起來很棒。", "tag": "稱讚外表", "level": 1, "survival": true, "homophone": "優 路克 鬼特 特迪"}, {"en": "Thank you, that's so sweet of you.", "zh": "謝謝，你人真好。", "tag": "回應稱讚", "level": 1, "survival": true, "homophone": "三Q 類次 蒐 斯位特 歐夫 幼"}, {"en": "You're so talented!", "zh": "你好有才華！", "tag": "稱讚能力", "level": 1, "survival": false, "homophone": "優阿 蒐 太朗提得"}, {"en": "Oh, thank you! I'm flattered.", "zh": "喔，謝謝！你過獎了。", "tag": "謙虛回應", "level": 1, "survival": true, "homophone": "歐 三Q 愛姆 夫拉特兒的"}, {"en": "That's a really nice jacket.", "zh": "這件外套真好看。", "tag": "稱讚服飾", "level": 2, "survival": false}, {"en": "Your English is amazing!", "zh": "你的英文好厲害！", "tag": "稱讚語言", "level": 2, "survival": false, "tip": "amazing比good更真誠強烈"}, {"en": "You did such a great job on this project.", "zh": "你這個專案做得真棒。", "tag": "稱讚表現", "level": 2, "survival": false}, {"en": "I really admire how you handled that.", "zh": "我很佩服你處理事情的方式。", "tag": "稱讚應對", "level": 3, "survival": false}, {"en": "Where did you get that? It's beautiful.", "zh": "你在哪買的？好漂亮。", "tag": "詢問來源", "level": 2, "survival": false, "tip": "順口稱讚+問來源，很自然的開場"}, {"en": "You have great taste.", "zh": "你的品味真好。", "tag": "稱讚品味", "level": 2, "survival": false}, {"en": "I couldn't have done it without your help, thanks so much.", "zh": "沒有你的幫忙我做不到，太感謝了。", "tag": "感謝並讚美", "level": 3, "survival": false}, {"en": "You're welcome, I'm glad you like it.", "zh": "不客氣，很高興你喜歡。", "tag": "回應致謝", "level": 2, "survival": false}, {"en": "That means a lot, thank you.", "zh": "這對我來說意義重大，謝謝。", "tag": "真誠回應", "level": 2, "survival": false}, {"en": "You're too kind.", "zh": "你太客氣了。", "tag": "謙虛回應", "level": 1, "survival": true, "homophone": "優阿 兔 康的"}, {"en": "I love what you've done with your hair.", "zh": "我好喜歡你的新髮型。", "tag": "稱讚造型", "level": 3, "survival": false}], "dialogue": {"title": "派對上的稱讚", "youRole": "你", "npcRole": "朋友 Emma", "lines": [{"who": "you", "en": "Emma! Wow, I love your dress. Where did you get it?", "zh": "Emma！哇，我好喜歡你的洋裝，在哪買的？"}, {"who": "npc", "en": "Oh, thank you! I got it downtown last week.", "zh": "喔，謝謝！我上禮拜在市區買的。"}, {"who": "you", "en": "It looks amazing on you. The color really suits you.", "zh": "你穿起來好好看，這顏色很適合你。"}, {"who": "npc", "en": "Aw, you're so sweet. I'm flattered!", "zh": "哎呀，你人真好，我都不好意思了！"}, {"who": "you", "en": "I'm serious! You always have great taste.", "zh": "我是說真的！你的品味一直都很好。"}, {"who": "npc", "en": "Thanks. By the way, I heard you gave a presentation last week — everyone said it was fantastic.", "zh": "謝謝。對了，聽說你上禮拜做了個簡報，大家都說很棒。"}, {"who": "you", "en": "Oh, thank you! That means a lot.", "zh": "喔，謝謝你！這對我來說意義重大。"}, {"who": "npc", "en": "You're really talented at public speaking.", "zh": "你在公開演講方面真的很有天分。"}, {"who": "you", "en": "You're too kind. I was actually pretty nervous.", "zh": "你太客氣了，其實我當時很緊張。"}, {"who": "npc", "en": "You didn't show it at all!", "zh": "你完全沒表現出來耶！"}]}}, {"id": "feelings", "icon": "😊", "title": "表達情緒", "titleEn": "Expressing Feelings", "desc": "開心、難過、生氣、緊張、感動", "country": "US", "words": [{"en": "happy", "zh": "開心的", "ico": "😊"}, {"en": "sad", "zh": "難過的", "ico": "😢"}, {"en": "angry", "zh": "生氣的", "ico": "😠"}, {"en": "nervous", "zh": "緊張的", "ico": "😰"}, {"en": "touched", "zh": "感動的", "ico": "🥹"}, {"en": "excited", "zh": "興奮的", "ico": "🤩"}, {"en": "upset", "zh": "心煩/難過的", "ico": "😞"}, {"en": "relieved", "zh": "鬆一口氣的", "ico": "😮‍💨"}], "patterns": [{"en": "I feel ___.", "zh": "我覺得___。", "slots": ["happy (開心)", "nervous (緊張)", "overwhelmed (不知所措)"]}, {"en": "I'm so ___ about ___.", "zh": "我對___感到很___。", "slots": ["excited / the trip (興奮/這趟旅行)", "nervous / the interview (緊張/面試)", "touched / your gift (感動/你的禮物)"]}, {"en": "It really ___ me.", "zh": "這件事真的讓我___。", "slots": ["made / laugh (讓我大笑)", "upsets (讓我心煩)", "touched (感動了)"]}], "phrases": [{"en": "How are you feeling today?", "zh": "你今天感覺怎麼樣？", "tag": "開場問候", "level": 1, "survival": true, "homophone": "好 阿 優 飛齡 特爹"}, {"en": "I'm so happy right now!", "zh": "我現在超開心的！", "tag": "表達開心", "level": 1, "survival": true, "homophone": "愛姆 蒐 黑批 賴特 惱"}, {"en": "I feel a little sad today.", "zh": "我今天有點難過。", "tag": "表達難過", "level": 1, "survival": true, "homophone": "愛 飛耳 婀 力頭 三的 特爹"}, {"en": "I'm really nervous about this.", "zh": "我對這件事真的很緊張。", "tag": "表達緊張", "level": 1, "survival": true, "homophone": "愛姆 力兒力 那弗式 婀寶特 力斯"}, {"en": "That really touched my heart.", "zh": "這真的讓我很感動。", "tag": "表達感動", "level": 1, "survival": true, "homophone": "類特 力兒力 踏取特 麥 哈特"}, {"en": "I'm so proud of you.", "zh": "我以你為榮。", "tag": "稱讚鼓勵", "level": 1, "survival": false}, {"en": "Don't worry, everything will be fine.", "zh": "別擔心，一切都會好的。", "tag": "安慰他人", "level": 2, "survival": false, "tip": "用來安慰緊張或難過的人"}, {"en": "I'm a bit upset because things didn't go well.", "zh": "我有點心煩，因為事情不太順利。", "tag": "說明原因", "level": 2, "survival": false}, {"en": "What's wrong? You look upset.", "zh": "怎麼了？你看起來不太開心。", "tag": "關心詢問", "level": 2, "survival": false}, {"en": "I could really use a hug right now.", "zh": "我現在真的很需要一個擁抱。", "tag": "尋求安慰", "level": 2, "survival": false}, {"en": "I'm trying not to cry.", "zh": "我正努力忍住不哭。", "tag": "忍住情緒", "level": 2, "survival": false}, {"en": "I get so nervous before speaking in public.", "zh": "我在公開演講前總是很緊張。", "tag": "描述情境", "level": 2, "survival": false}, {"en": "Thank you, that means a lot to me.", "zh": "謝謝你，這對我意義重大。", "tag": "回應感動", "level": 2, "survival": false}, {"en": "Take a deep breath, you'll be okay.", "zh": "深呼吸，你會沒事的。", "tag": "安撫緊張", "level": 2, "survival": false, "tip": "對緊張的人很實用"}, {"en": "I burst into tears when I heard the good news.", "zh": "聽到好消息時我忍不住哭了。", "tag": "描述反應", "level": 3, "survival": false}, {"en": "It's okay to feel angry sometimes, just don't take it out on others.", "zh": "有時候生氣沒關係，但別把氣出在別人身上。", "tag": "情緒建議", "level": 3, "survival": false}], "dialogue": {"title": "朋友間聊心情", "youRole": "你", "npcRole": "好友 Sarah", "lines": [{"who": "npc", "en": "Hey, you look a little down today. What's wrong?", "zh": "嘿，你今天看起來有點低落，怎麼了？"}, {"who": "you", "en": "I'm just feeling a bit sad. I didn't get the job I wanted.", "zh": "我只是有點難過，我沒拿到我想要的那份工作。"}, {"who": "npc", "en": "Oh no, I'm sorry to hear that. That must be really disappointing.", "zh": "喔不，聽到這消息我很難過，那一定很讓人失望。"}, {"who": "you", "en": "Yeah, I was really nervous about the interview too, and now it feels like it was all for nothing.", "zh": "對啊，我對面試也超級緊張，現在感覺一切都白費了。"}, {"who": "npc", "en": "Don't worry, everything will be fine. You'll find something even better.", "zh": "別擔心，一切都會好的，你會找到更好的機會。"}, {"who": "you", "en": "Thanks, that really means a lot to me.", "zh": "謝謝，這對我來說意義重大。"}, {"who": "npc", "en": "By the way, I have some good news that might cheer you up. I got tickets to that concert you love!", "zh": "對了，我有個好消息可能會讓你開心一點，我拿到你喜歡的那場演唱會門票了！"}, {"who": "you", "en": "Wait, really? I'm so happy right now! You always know how to make me feel better.", "zh": "等等，真的假的？我現在超開心的！你總是知道怎麼讓我心情變好。"}, {"who": "npc", "en": "Of course, that's what friends are for. Seeing you smile again really touches my heart.", "zh": "當然啊，朋友就是要這樣。看到你又笑了真的讓我很感動。"}, {"who": "you", "en": "I could really use a hug right now.", "zh": "我現在真的很需要一個擁抱。"}, {"who": "npc", "en": "Come here! We'll get through the tough times together.", "zh": "來吧！我們會一起度過難關的。"}]}}, {"id": "comfort", "icon": "🤗", "title": "安慰打氣", "titleEn": "Comforting", "desc": "安慰難過的人、陪伴", "country": "US", "words": [{"en": "comfort", "zh": "安慰;慰藉", "ico": "🤗"}, {"en": "support", "zh": "支持;支撐", "ico": "💪"}, {"en": "cry", "zh": "哭泣", "ico": "😢"}, {"en": "tough", "zh": "艱難的", "ico": "🌧️"}, {"en": "listen", "zh": "傾聽", "ico": "👂"}, {"en": "okay", "zh": "沒事;還好", "ico": "👌"}, {"en": "hug", "zh": "擁抱", "ico": "🫂"}, {"en": "there for you", "zh": "陪伴在旁", "ico": "❤️"}], "patterns": [{"en": "I'm so sorry to hear about ___.", "zh": "聽到___的事我很難過。", "slots": ["your loss", "your breakup", "what happened"]}, {"en": "It's okay to feel ___.", "zh": "感到___是沒關係的。", "slots": ["sad", "upset", "angry"]}, {"en": "You're going to get through ___.", "zh": "你會撐過___的。", "slots": ["this", "this tough time", "it"]}], "phrases": [{"en": "Are you okay?", "zh": "你還好嗎？", "tag": "開場關心", "level": 1, "survival": true, "homophone": "阿 you OK"}, {"en": "What's wrong?", "zh": "怎麼了？", "tag": "詢問狀況", "level": 1, "survival": false, "homophone": "華資 弱"}, {"en": "I'm here for you.", "zh": "我會陪著你。", "tag": "陪伴承諾", "level": 1, "survival": true, "homophone": "愛母 黑兒 佛 you"}, {"en": "It's okay, take your time.", "zh": "沒關係，慢慢來。", "tag": "給予空間", "level": 1, "survival": true, "homophone": "依次OK, 貼可 幼兒 太母"}, {"en": "I'm so sorry to hear that.", "zh": "聽到這件事我很難過。", "tag": "表達同理", "level": 1, "survival": true, "homophone": "愛悶 蒐 蒐瑞 兔 河兒 類"}, {"en": "Do you want to talk about it?", "zh": "你想聊聊嗎？", "tag": "開啟話題", "level": 2, "survival": false}, {"en": "It's okay to cry.", "zh": "哭出來沒關係。", "tag": "允許情緒", "level": 2, "survival": false}, {"en": "You don't have to be strong right now.", "zh": "你現在不用逞強。", "tag": "卸下防備", "level": 2, "survival": false, "tip": "對長輩或男性朋友特別受用，鼓勵他們放下堅強的樣子"}, {"en": "Everything is going to be okay.", "zh": "一切都會沒事的。", "tag": "安撫鼓勵", "level": 2, "survival": false}, {"en": "You're not alone in this.", "zh": "這件事你並不孤單。", "tag": "陪伴強調", "level": 2, "survival": false}, {"en": "Take a deep breath.", "zh": "深呼吸一下。", "tag": "平復情緒", "level": 2, "survival": false}, {"en": "Let me know if there's anything I can do.", "zh": "有什麼我能幫忙的儘管說。", "tag": "提供協助", "level": 2, "survival": false}, {"en": "Is there anything you need right now?", "zh": "你現在需要什麼嗎？", "tag": "實際需求", "level": 2, "survival": false}, {"en": "I know this is really hard for you.", "zh": "我知道這對你來說真的很難。", "tag": "表達理解", "level": 3, "survival": false}, {"en": "You've done everything you could.", "zh": "你已經盡力了。", "tag": "肯定努力", "level": 3, "survival": false}, {"en": "This feeling won't last forever.", "zh": "這種感覺不會永遠持續下去。", "tag": "給予希望", "level": 3, "survival": false}], "dialogue": {"title": "朋友分手後的安慰", "youRole": "關心的朋友", "npcRole": "剛分手的朋友", "lines": [{"who": "you", "en": "Hey, are you okay? You look upset.", "zh": "嘿，你還好嗎？你看起來很難過。"}, {"who": "npc", "en": "Not really... we broke up last night.", "zh": "不太好……我們昨晚分手了。"}, {"who": "you", "en": "I'm so sorry to hear that.", "zh": "聽到這件事我真的很難過。"}, {"who": "npc", "en": "I don't even know what to do now.", "zh": "我現在都不知道該怎麼辦。"}, {"who": "you", "en": "It's okay, take your time. You don't have to figure it all out today.", "zh": "沒關係，慢慢來，你不用今天就想清楚一切。"}, {"who": "npc", "en": "I just feel like crying all the time.", "zh": "我一直都覺得想哭。"}, {"who": "you", "en": "It's okay to cry. Let it out.", "zh": "哭出來沒關係，發洩出來吧。"}, {"who": "npc", "en": "Thanks. I'm glad you're here.", "zh": "謝謝，很高興有你在。"}, {"who": "you", "en": "I'm here for you, no matter what.", "zh": "不管怎樣我都會陪著你。"}, {"who": "npc", "en": "Can we just sit here for a while?", "zh": "我們可以就這樣坐一下嗎？"}, {"who": "you", "en": "Of course. Take all the time you need.", "zh": "當然可以，你需要多久都行。"}, {"who": "npc", "en": "Thank you. This really means a lot.", "zh": "謝謝你，這對我意義很大。"}]}}, {"id": "apology", "icon": "🙇", "title": "道歉和好", "titleEn": "Apologizing", "desc": "道歉、原諒、和好", "country": "US", "words": [{"en": "apologize", "zh": "道歉", "ico": "🙏"}, {"en": "forgive", "zh": "原諒", "ico": "🤝"}, {"en": "mistake", "zh": "錯誤", "ico": "❌"}, {"en": "sorry", "zh": "抱歉的", "ico": "😔"}, {"en": "misunderstanding", "zh": "誤會", "ico": "😕"}, {"en": "blame", "zh": "責怪", "ico": "👉"}, {"en": "make up", "zh": "和好", "ico": "💞"}, {"en": "apology", "zh": "道歉(名詞)", "ico": "📝"}], "patterns": [{"en": "I'm sorry for ___.", "zh": "我很抱歉___。", "slots": ["being late", "what I said", "forgetting your birthday"]}, {"en": "I didn't mean to ___.", "zh": "我不是故意要___的。", "slots": ["hurt your feelings", "upset you", "ignore your message"]}, {"en": "Can we just ___?", "zh": "我們可以___嗎？", "slots": ["forget about it", "start over", "talk about it"]}], "phrases": [{"en": "I'm sorry.", "zh": "對不起。", "tag": "基本道歉", "level": 1, "survival": true, "homophone": "愛母 蘇瑞"}, {"en": "I'm really sorry.", "zh": "我真的很抱歉。", "tag": "加強道歉", "level": 1, "survival": true, "homophone": "愛母 瑞兒力 蘇瑞"}, {"en": "That was my fault.", "zh": "那是我的錯。", "tag": "認錯", "level": 1, "survival": true, "homophone": "類特 沃資 買 佛特"}, {"en": "I made a mistake.", "zh": "我犯了一個錯誤。", "tag": "承認錯誤", "level": 1, "survival": false, "homophone": "愛 妹的 阿 密斯貼克"}, {"en": "I didn't mean to hurt you.", "zh": "我不是故意要傷害你的。", "tag": "解釋動機", "level": 2, "survival": false, "homophone": ""}, {"en": "Can you forgive me?", "zh": "你能原諒我嗎？", "tag": "請求原諒", "level": 1, "survival": true, "homophone": "肯 U 佛及夫 密", "tip": "最常用、最直接的求和句"}, {"en": "I feel terrible about what happened.", "zh": "對於發生的事，我覺得很糟。", "tag": "表達自責", "level": 2, "survival": false, "homophone": ""}, {"en": "It won't happen again.", "zh": "這不會再發生了。", "tag": "保證", "level": 2, "survival": true, "homophone": "", "tip": "道歉後加這句表示有誠意改進"}, {"en": "I should have listened to you.", "zh": "我當初應該聽你的話。", "tag": "反省", "level": 3, "survival": false, "homophone": ""}, {"en": "Let's not fight anymore.", "zh": "我們別再吵了。", "tag": "停止爭執", "level": 2, "survival": false, "homophone": ""}, {"en": "Can we talk this through?", "zh": "我們可以好好談談嗎？", "tag": "溝通提議", "level": 2, "survival": false, "homophone": ""}, {"en": "I hope you can understand.", "zh": "希望你能理解。", "tag": "尋求理解", "level": 2, "survival": false, "homophone": ""}, {"en": "I take full responsibility.", "zh": "我願意承擔全部責任。", "tag": "負責", "level": 3, "survival": false, "homophone": ""}, {"en": "No hard feelings?", "zh": "沒有不愉快了吧？", "tag": "確認和好", "level": 2, "survival": false, "homophone": "", "tip": "朋友間輕鬆和解常用，語氣要溫和"}, {"en": "Let's just move on.", "zh": "我們就往前看吧。", "tag": "放下", "level": 2, "survival": false, "homophone": ""}, {"en": "Friends again?", "zh": "我們還是朋友吧？", "tag": "確認關係", "level": 1, "survival": false, "homophone": "富冷資 阿乾"}], "dialogue": {"title": "道歉和好", "youRole": "跟朋友吵架後道歉的你", "npcRole": "朋友", "lines": [{"who": "you", "en": "Hey, do you have a minute? I want to talk about what happened.", "zh": "嘿，你有空嗎？我想談談發生的事。"}, {"who": "npc", "en": "Sure. I'm listening.", "zh": "當然，我在聽。"}, {"who": "you", "en": "I'm really sorry for what I said yesterday. I didn't mean it.", "zh": "我真的很抱歉昨天說的話，我不是故意的。"}, {"who": "npc", "en": "It hurt, you know. I was upset for a long time.", "zh": "你知道那讓我很受傷，我難過了好久。"}, {"who": "you", "en": "I know, and it was my fault. I should have thought before speaking.", "zh": "我知道，那是我的錯，我應該先想清楚再說話。"}, {"who": "npc", "en": "Why did you say that anyway?", "zh": "你到底為什麼會那樣說？"}, {"who": "you", "en": "I was stressed and took it out on you. That's no excuse though.", "zh": "我當時壓力很大，就拿你出氣了，但這不是藉口。"}, {"who": "npc", "en": "I appreciate you admitting it.", "zh": "謝謝你願意承認。"}, {"who": "you", "en": "Can you forgive me? I really value our friendship.", "zh": "你能原諒我嗎？我真的很珍惜我們的友誼。"}, {"who": "npc", "en": "Yeah, I forgive you. Just don't let it happen again.", "zh": "好，我原諒你，但別再讓這種事發生了。"}, {"who": "you", "en": "I promise. Friends again?", "zh": "我保證。我們還是朋友吧？"}, {"who": "npc", "en": "Friends again.", "zh": "還是朋友。"}]}}, {"id": "thanks", "icon": "🙏", "title": "感謝致意", "titleEn": "Gratitude", "desc": "道謝、回應謝謝", "country": "US", "words": [{"en": "thank you", "zh": "謝謝", "ico": "🙏"}, {"en": "appreciate", "zh": "感激", "ico": "💛"}, {"en": "grateful", "zh": "心存感激的", "ico": "😊"}, {"en": "kind", "zh": "貼心的、好心的", "ico": "🤗"}, {"en": "favor", "zh": "幫忙、恩惠", "ico": "🤝"}, {"en": "welcome", "zh": "不客氣", "ico": "👋"}, {"en": "mention", "zh": "提起(常用於no problem語境)", "ico": "💬"}, {"en": "lifesaver", "zh": "救星、大恩人", "ico": "🦸"}], "patterns": [{"en": "Thank you so much for ___.", "zh": "非常謝謝你___。", "slots": ["your help", "the ride", "the gift", "waiting for me"]}, {"en": "I really appreciate ___.", "zh": "我真的很感激___。", "slots": ["it", "your time", "your patience", "everything you did"]}, {"en": "Thanks a lot, ___!", "zh": "太謝謝了，___！", "slots": ["that means a lot", "you saved my day", "you're the best", "I owe you one"]}], "phrases": [{"en": "Thank you.", "zh": "謝謝。", "tag": "基本謝", "level": 1, "survival": true, "homophone": "山Q", "tip": "最基本萬用，任何場合都能說"}, {"en": "Thank you so much.", "zh": "真的非常謝謝你。", "tag": "加強謝", "level": 1, "survival": true, "homophone": "山Q 蒐 罵取"}, {"en": "You're welcome.", "zh": "不客氣。", "tag": "回應謝", "level": 1, "survival": true, "homophone": "油阿 威爾康"}, {"en": "No problem.", "zh": "沒問題、不用謝。", "tag": "回應謝", "level": 1, "survival": true, "homophone": "諾 撲拉本"}, {"en": "I really appreciate it.", "zh": "我真的很感激。", "tag": "表達感激", "level": 2, "survival": true, "homophone": "愛 瑞兒里 阿普里些特 一特", "tip": "比thank you更正式、更誠懇，適合對方特別幫忙時"}, {"en": "Thanks a lot.", "zh": "太謝謝了。", "tag": "加強謝", "level": 1, "survival": false, "homophone": "山克斯 阿 拉特"}, {"en": "Thank you for your help.", "zh": "謝謝你的幫忙。", "tag": "謝幫忙", "level": 1, "survival": false, "homophone": ""}, {"en": "Thank you for everything.", "zh": "謝謝你所做的一切。", "tag": "謝一切", "level": 2, "survival": false, "homophone": ""}, {"en": "That's very kind of you.", "zh": "你人真好、太貼心了。", "tag": "稱讚貼心", "level": 2, "survival": false, "homophone": "", "tip": "對方主動幫忙或體貼時用"}, {"en": "I owe you one.", "zh": "我欠你一個人情。", "tag": "欠人情", "level": 2, "survival": false, "homophone": ""}, {"en": "You're a lifesaver!", "zh": "你真是我的救星！", "tag": "救星", "level": 2, "survival": false, "homophone": ""}, {"en": "Don't mention it.", "zh": "別客氣、小事一樁。", "tag": "回應謝", "level": 2, "survival": false, "homophone": ""}, {"en": "It was my pleasure.", "zh": "這是我的榮幸。", "tag": "回應謝", "level": 2, "survival": false, "homophone": ""}, {"en": "Anytime!", "zh": "隨時效勞！", "tag": "回應謝", "level": 1, "survival": false, "homophone": "安尼塔姆"}, {"en": "I can't thank you enough.", "zh": "我怎麼感謝你都不夠。", "tag": "深深感謝", "level": 3, "survival": false, "homophone": ""}, {"en": "That means a lot to me.", "zh": "這對我意義重大。", "tag": "表達感動", "level": 3, "survival": false, "homophone": ""}], "dialogue": {"title": "路人幫忙撿東西後的道謝", "youRole": "你（掉了東西的人）", "npcRole": "路人", "lines": [{"who": "you", "en": "Oh no, I dropped my wallet!", "zh": "糟糕，我的皮夾掉了！"}, {"who": "npc", "en": "Wait, here you go! You dropped this.", "zh": "等等，這給你！你剛掉了這個。"}, {"who": "you", "en": "Oh, thank you so much!", "zh": "喔，真的非常謝謝你！"}, {"who": "npc", "en": "No problem at all.", "zh": "完全沒問題。"}, {"who": "you", "en": "I really appreciate it. That's very kind of you.", "zh": "我真的很感激。你人真好。"}, {"who": "npc", "en": "It was my pleasure. Have a great day!", "zh": "這是我的榮幸。祝你有美好的一天！"}, {"who": "you", "en": "You too! Thanks again, you're a lifesaver.", "zh": "你也是！再次謝謝，你真是我的救星。"}, {"who": "npc", "en": "Haha, don't mention it. Take care!", "zh": "哈哈，別客氣。保重！"}, {"who": "you", "en": "You too. Bye!", "zh": "你也是，掰掰！"}]}}, {"id": "disagree", "icon": "🤔", "title": "委婉反對", "titleEn": "Disagreeing", "desc": "表達不同意見、化解爭執", "country": "US", "words": [{"en": "disagree", "zh": "不同意", "ico": "🙅"}, {"en": "opinion", "zh": "意見", "ico": "💭"}, {"en": "actually", "zh": "其實", "ico": "🤔"}, {"en": "point", "zh": "論點；重點", "ico": "🎯"}, {"en": "understand", "zh": "理解", "ico": "🧠"}, {"en": "compromise", "zh": "妥協", "ico": "🤝"}, {"en": "perspective", "zh": "觀點", "ico": "👀"}, {"en": "argument", "zh": "爭執；論點", "ico": "⚡"}], "patterns": [{"en": "I see your point, but ___.", "zh": "我懂你的意思，但是___。", "slots": ["I think it's a bit different", "I look at it another way", "that might not work here", "the numbers say otherwise"]}, {"en": "I'm not sure I agree with ___.", "zh": "我不太確定我同意___。", "slots": ["that idea", "the plan", "what you said", "this approach"]}, {"en": "Can we find a middle ground on ___?", "zh": "我們能在___上找到折衷方案嗎？", "slots": ["the schedule", "the price", "this decision", "where to eat"]}], "phrases": [{"en": "I'm not sure about that.", "zh": "我不太確定耶。", "tag": "開場委婉", "level": 1, "survival": true, "homophone": "愛姆 那 秀兒 阿寶 類特"}, {"en": "I see what you mean.", "zh": "我懂你的意思。", "tag": "先肯定", "level": 1, "survival": true, "homophone": "愛 西 華特 優 密"}, {"en": "I have a different opinion.", "zh": "我有不同的看法。", "tag": "表態", "level": 1, "survival": true, "homophone": "愛 黑夫 阿 迪ㄈ扔特 歐拼元"}, {"en": "Can I say something?", "zh": "我可以說幾句嗎？", "tag": "插話", "level": 1, "survival": false, "homophone": "肯 愛 誰 桑性"}, {"en": "Let's agree to disagree.", "zh": "我們就求同存異吧。", "tag": "化解", "level": 1, "survival": true, "homophone": "類次 阿鬼 兔 迪斯阿鬼"}, {"en": "I understand your point, but I see it differently.", "zh": "我懂你的重點，但我的看法不太一樣。", "tag": "委婉反駁", "level": 2, "survival": false, "tip": "先認同再表達不同意見，語氣較不衝突"}, {"en": "With respect, I don't think that's quite right.", "zh": "恕我直言，我覺得那不太對。", "tag": "禮貌反駁", "level": 2, "survival": false, "tip": "With respect 開頭很正式有禮"}, {"en": "I'm afraid I have to disagree on this one.", "zh": "這件事上恐怕我得不同意了。", "tag": "正式表態", "level": 2, "survival": false}, {"en": "That's a fair point, but have you considered the other side?", "zh": "這點說得有道理，但你有考慮過另一面嗎？", "tag": "提出反思", "level": 2, "survival": false}, {"en": "I don't quite see it that way.", "zh": "我不太這麼認為。", "tag": "溫和反對", "level": 2, "survival": false}, {"en": "Let's not make this personal, okay?", "zh": "我們別把這變成人身攻擊，好嗎？", "tag": "降溫", "level": 2, "survival": false}, {"en": "Maybe we're both a little right here.", "zh": "也許我們都對了一部分。", "tag": "和解", "level": 2, "survival": false}, {"en": "I hear you, but the facts suggest otherwise.", "zh": "我聽到你的意見了，但事實好像不是這樣。", "tag": "事實反駁", "level": 3, "survival": false}, {"en": "Let's agree on the main goal and work out the details later.", "zh": "我們先對主要目標達成共識，細節之後再討論。", "tag": "聚焦共識", "level": 3, "survival": false}, {"en": "I don't want to argue, I just want to explain my side.", "zh": "我不是想吵架，只是想解釋我的立場。", "tag": "化解衝突", "level": 3, "survival": false}, {"en": "Let's just calm down and talk this through.", "zh": "我們先冷靜下來好好談。", "tag": "緩和氣氛", "level": 1, "survival": true, "homophone": "類次 加斯特 卡姆 黨 安 透克 利斯 兔"}], "dialogue": {"title": "晚餐要吃哪家？意見不合怎麼辦", "youRole": "你", "npcRole": "朋友", "lines": [{"who": "npc", "en": "I really think we should eat at that new burger place.", "zh": "我真的覺得我們應該去那家新的漢堡店吃。"}, {"who": "you", "en": "I see your point, but I had burgers yesterday.", "zh": "我懂你的意思，但我昨天才吃過漢堡。"}, {"who": "npc", "en": "Come on, it's supposed to be really good.", "zh": "拜託啦，聽說那家真的很棒。"}, {"who": "you", "en": "I'm not sure about that. Can we find a middle ground?", "zh": "我不太確定耶。我們可以找個折衷方案嗎？"}, {"who": "npc", "en": "What do you have in mind?", "zh": "你有什麼想法？"}, {"who": "you", "en": "How about the Italian place near the station? They have burgers too, sort of.", "zh": "車站附近那家義式餐廳怎麼樣？他們也有類似漢堡的東西。"}, {"who": "npc", "en": "Hmm, I don't quite see why we can't just go to the burger place.", "zh": "嗯，我不太懂為什麼我們不能直接去漢堡店。"}, {"who": "you", "en": "With respect, I just want a little variety tonight.", "zh": "恕我直言，我今晚只是想吃點不一樣的。"}, {"who": "npc", "en": "Fair enough. Let's try the Italian place then.", "zh": "好吧，有道理，那我們去試試義式餐廳。"}, {"who": "you", "en": "Great, let's agree on that and go!", "zh": "太好了，那就這樣說定，我們走吧！"}]}}, {"id": "encourage", "icon": "💪", "title": "鼓勵支持", "titleEn": "Encouragement", "desc": "加油打氣、支持", "country": "US", "words": [{"en": "encourage", "zh": "鼓勵", "ico": "💪"}, {"en": "support", "zh": "支持", "ico": "🤝"}, {"en": "believe in", "zh": "相信", "ico": "✨"}, {"en": "proud", "zh": "驕傲的", "ico": "😊"}, {"en": "cheer up", "zh": "打起精神", "ico": "📣"}, {"en": "tough time", "zh": "難關", "ico": "⛈️"}, {"en": "give up", "zh": "放棄", "ico": "🚫"}, {"en": "strength", "zh": "力量", "ico": "🦾"}], "patterns": [{"en": "I believe ___ can do this.", "zh": "我相信___辦得到。", "slots": ["you", "she", "he", "they"]}, {"en": "Don't worry about ___.", "zh": "別擔心___。", "slots": ["the result", "what others say", "the mistake", "failing"]}, {"en": "You did a great job ___.", "zh": "你在___做得很棒。", "slots": ["on the interview", "with the presentation", "today", "handling that"]}], "phrases": [{"en": "You can do this!", "zh": "你可以的！", "tag": "打氣", "level": 1, "survival": true, "homophone": "優 肯 度 利斯"}, {"en": "I believe in you.", "zh": "我相信你。", "tag": "信任", "level": 1, "survival": true, "homophone": "愛 逼力福 引 U"}, {"en": "Don't give up.", "zh": "別放棄。", "tag": "堅持", "level": 1, "survival": true, "homophone": "洞特 幾夫 阿普"}, {"en": "You've got this.", "zh": "你一定行的。", "tag": "打氣", "level": 1, "survival": false, "homophone": "優夫 咖特 利斯"}, {"en": "Hang in there.", "zh": "撐住，別放棄。", "tag": "鼓勵", "level": 1, "survival": true, "homophone": "很 印 淚兒"}, {"en": "I'm proud of you.", "zh": "我以你為榮。", "tag": "讚美", "level": 1, "survival": false, "homophone": "愛門 撲勞的 歐夫 優"}, {"en": "It's okay to make mistakes.", "zh": "犯錯沒關係。", "tag": "安慰", "level": 2, "survival": false}, {"en": "Everything is going to be fine.", "zh": "一切都會好起來的。", "tag": "安慰", "level": 2, "survival": false}, {"en": "Take your time, there's no rush.", "zh": "慢慢來，不用急。", "tag": "寬慰", "level": 2, "survival": false}, {"en": "You're stronger than you think.", "zh": "你比你想的還堅強。", "tag": "打氣", "level": 2, "survival": false}, {"en": "Just do your best, that's all that matters.", "zh": "盡力就好，這才是最重要的。", "tag": "鼓勵", "level": 2, "survival": false, "tip": "適合安慰壓力大的人"}, {"en": "I'm here for you, no matter what.", "zh": "無論如何我都在你身邊。", "tag": "陪伴", "level": 2, "survival": true}, {"en": "Keep going, you're almost there.", "zh": "繼續加油，你快成功了。", "tag": "鼓勵", "level": 2, "survival": false}, {"en": "Chin up! Tomorrow's a new day.", "zh": "抬起頭來！明天又是新的一天。", "tag": "打氣", "level": 2, "survival": false, "tip": "chin up 是常見口語，字面「抬起下巴」"}, {"en": "Don't let one setback define you.", "zh": "別讓一次挫折定義了你。", "tag": "鼓勵", "level": 3, "survival": false}, {"en": "Every failure is just a step closer to success.", "zh": "每次失敗都是離成功更近一步。", "tag": "激勵", "level": 3, "survival": false}], "dialogue": {"title": "考試沒考好的安慰", "youRole": "朋友", "npcRole": "剛考差的同學", "lines": [{"who": "npc", "en": "I failed the exam again. I feel like giving up.", "zh": "我考試又不及格了，我覺得好想放棄。"}, {"who": "you", "en": "Hey, don't give up. One test doesn't define you.", "zh": "嘿，別放棄。一次考試不能定義你。"}, {"who": "npc", "en": "But I've tried so hard and it's still not enough.", "zh": "但我已經很努力了，還是不夠好。"}, {"who": "you", "en": "I know it's tough, but I believe you can do this.", "zh": "我知道很難熬，但我相信你辦得到。"}, {"who": "npc", "en": "You really think so?", "zh": "你真的這麼認為？"}, {"who": "you", "en": "Of course. You've improved so much already.", "zh": "當然。你已經進步很多了。"}, {"who": "npc", "en": "I guess I just need to keep practicing.", "zh": "我想我只是需要繼續練習。"}, {"who": "you", "en": "Exactly. Just do your best, that's all that matters.", "zh": "沒錯。盡力就好，這才是最重要的。"}, {"who": "npc", "en": "Thanks. That really helps.", "zh": "謝謝，這真的很有幫助。"}, {"who": "you", "en": "Anytime. I'm here for you, no matter what.", "zh": "隨時都可以找我。無論如何我都在你身邊。"}, {"who": "npc", "en": "I'll try again next time.", "zh": "下次我會再試一次。"}, {"who": "you", "en": "That's the spirit! You've got this.", "zh": "這就對了！你一定行的。"}]}}, {"id": "dating", "icon": "💕", "title": "約會告白", "titleEn": "Dating", "desc": "約會、告白、曖昧、表達好感", "country": "US", "words": [{"en": "crush", "zh": "心儀的對象", "ico": "💘"}, {"en": "date", "zh": "約會", "ico": "📅"}, {"en": "confess", "zh": "告白", "ico": "💌"}, {"en": "chemistry", "zh": "來電的感覺", "ico": "✨"}, {"en": "single", "zh": "單身", "ico": "🙋"}, {"en": "flirt", "zh": "調情/曖昧", "ico": "😉"}, {"en": "relationship", "zh": "關係/交往", "ico": "💑"}, {"en": "reject", "zh": "拒絕", "ico": "🚫"}], "patterns": [{"en": "I really like ___.", "zh": "我真的很喜歡___。", "slots": ["you", "spending time with you", "your smile"]}, {"en": "Do you want to ___ sometime?", "zh": "你想找時間一起___嗎？", "slots": ["grab coffee", "watch a movie", "get dinner"]}, {"en": "I've had a crush on you since ___.", "zh": "我從___開始就對你有好感。", "slots": ["we met", "last year", "the day we worked together"]}], "phrases": [{"en": "Are you seeing anyone right now?", "zh": "你現在有在跟誰交往嗎？", "tag": "打探", "level": 2, "survival": false, "homophone": ""}, {"en": "I think you're really cute.", "zh": "我覺得你真的很可愛。", "tag": "稱讚", "level": 1, "survival": true, "homophone": "愛 think 優 兒 里 Q特"}, {"en": "Do you want to grab coffee sometime?", "zh": "你想找時間一起喝杯咖啡嗎？", "tag": "邀約", "level": 1, "survival": true, "homophone": "度 優 望特 兔 個拉不 咖啡 桑太恆", "tip": "grab coffee是很輕鬆隨性的邀約說法，壓力不大"}, {"en": "I had a really nice time tonight.", "zh": "我今晚玩得很開心。", "tag": "收尾", "level": 1, "survival": false, "homophone": "愛 黑的 阿 里兒里 耐斯 太恆 特耐特"}, {"en": "I like you. Do you want to go out with me?", "zh": "我喜歡你，你願意跟我交往嗎？", "tag": "告白", "level": 1, "survival": true, "homophone": "愛 賴克 優。度 優 望特 溝 凹特 位斯 密"}, {"en": "I've had a crush on you for a while.", "zh": "我已經對你有好感一陣子了。", "tag": "曖昧", "level": 2, "survival": false, "homophone": ""}, {"en": "Can I get your number?", "zh": "可以跟你要電話號碼嗎？", "tag": "要聯絡方式", "level": 1, "survival": true, "homophone": "肯 愛 給特 幼兒 那波兒"}, {"en": "What do you like to do for fun?", "zh": "你平常喜歡做什麼消遣？", "tag": "聊天", "level": 2, "survival": false, "homophone": ""}, {"en": "I feel like there's really good chemistry between us.", "zh": "我覺得我們之間真的很來電。", "tag": "感覺", "level": 3, "survival": false, "homophone": ""}, {"en": "I'm not really looking for anything serious right now.", "zh": "我現在還沒有想認真交往。", "tag": "婉拒", "level": 2, "survival": true, "homophone": ""}, {"en": "I appreciate it, but I don't feel the same way.", "zh": "謝謝你，但我沒有一樣的感覺。", "tag": "拒絕", "level": 2, "survival": true, "homophone": ""}, {"en": "Can we still be friends?", "zh": "我們還可以當朋友嗎？", "tag": "緩和", "level": 1, "survival": false, "homophone": "肯 位 斯提 逼 富郎斯"}, {"en": "I'd love to see you again.", "zh": "我很想再見到你。", "tag": "延續關係", "level": 2, "survival": false, "homophone": ""}, {"en": "So, are we official now?", "zh": "所以，我們現在算是正式交往了嗎？", "tag": "確認關係", "level": 3, "survival": false, "homophone": ""}, {"en": "You look amazing tonight.", "zh": "你今晚看起來美極了。", "tag": "稱讚", "level": 1, "survival": false, "homophone": "優 路克 阿妹忍 太恆特"}, {"en": "I think we'd make a great couple.", "zh": "我覺得我們會是很棒的一對。", "tag": "深情", "level": 3, "survival": false, "homophone": ""}], "dialogue": {"title": "咖啡廳告白", "youRole": "鼓起勇氣告白的人", "npcRole": "心儀的對象", "lines": [{"who": "you", "en": "Hey, thanks for meeting me here.", "zh": "嘿，謝謝你來這裡見我。"}, {"who": "npc", "en": "Of course! What's up? You seem a little nervous.", "zh": "當然啦！怎麼了？你看起來有點緊張。"}, {"who": "you", "en": "Yeah, actually... there's something I want to tell you.", "zh": "嗯，其實…有件事我想跟你說。"}, {"who": "npc", "en": "Okay, I'm listening.", "zh": "好啊，我在聽。"}, {"who": "you", "en": "I've had a crush on you for a while now. I really like you.", "zh": "我已經對你有好感一陣子了，我真的很喜歡你。"}, {"who": "npc", "en": "Oh wow... I wasn't expecting that.", "zh": "哇…我沒想到你會這麼說。"}, {"who": "you", "en": "Sorry if it's sudden. I just felt like I had to be honest.", "zh": "抱歉如果太突然，我只是覺得應該老實說出來。"}, {"who": "npc", "en": "No, it's sweet. Honestly, I've enjoyed spending time with you too.", "zh": "不會，這樣很貼心。老實說，我也很享受跟你相處的時間。"}, {"who": "you", "en": "So... do you want to go out with me sometime?", "zh": "那…你願意找時間跟我出去約會嗎？"}, {"who": "npc", "en": "I'd like that. How about dinner this Friday?", "zh": "我很樂意。這禮拜五一起吃晚餐怎麼樣？"}, {"who": "you", "en": "Really? That sounds perfect.", "zh": "真的嗎？聽起來太完美了。"}, {"who": "npc", "en": "It's a date, then.", "zh": "那就這麼說定了，這是一場約會。"}]}}, {"id": "deep-talk", "icon": "🫂", "title": "交心談心", "titleEn": "Heart-to-Heart", "desc": "聊心事、傾訴、給建議", "country": "US", "words": [{"en": "heart-to-heart", "zh": "交心談話", "ico": "💞"}, {"en": "vent", "zh": "傾訴、發洩情緒", "ico": "😮‍💨"}, {"en": "advice", "zh": "建議", "ico": "💡"}, {"en": "support", "zh": "支持", "ico": "🤝"}, {"en": "listen", "zh": "傾聽", "ico": "👂"}, {"en": "trust", "zh": "信任", "ico": "🔒"}, {"en": "burden", "zh": "心理負擔", "ico": "🎒"}, {"en": "open up", "zh": "敞開心房", "ico": "🔓"}], "patterns": [{"en": "I've been feeling ___ lately.", "zh": "我最近覺得很___。", "slots": ["down", "stressed out", "overwhelmed"]}, {"en": "Can I talk to you about ___?", "zh": "我可以跟你聊聊___嗎？", "slots": ["something", "my relationship", "a problem at work"]}, {"en": "Maybe you should try ___.", "zh": "或許你可以試試___。", "slots": ["talking to her directly", "taking a short break", "seeing a counselor"]}], "phrases": [{"en": "Hey, do you have a minute? I need to talk.", "zh": "嘿，你有空嗎？我需要跟你聊聊。", "tag": "開場", "level": 1, "survival": true, "homophone": "嘿，賭尤 黑夫 阿 迷妞特？愛 尼的 兔 透克"}, {"en": "I've been feeling really down lately.", "zh": "我最近心情很低落。", "tag": "情緒", "level": 1, "survival": true, "homophone": "艾夫 兵 費霖 瑞兒裡 黨 淚特裡"}, {"en": "Can I vent to you for a second?", "zh": "我可以跟你發洩一下情緒嗎？", "tag": "傾訴", "level": 2, "survival": false, "homophone": "", "tip": "vent 是「發洩情緒」，比 talk 更強調宣洩心中壓力"}, {"en": "I don't know what to do.", "zh": "我不知道該怎麼辦。", "tag": "困惑", "level": 1, "survival": true, "homophone": "愛 動特 諾 華特 兔 賭"}, {"en": "I just need someone to talk to.", "zh": "我只是需要一個可以說話的人。", "tag": "需求", "level": 2, "survival": false, "homophone": ""}, {"en": "It's been really hard for me lately.", "zh": "我最近過得很不容易。", "tag": "心情", "level": 1, "survival": false, "homophone": ""}, {"en": "What do you think I should do?", "zh": "你覺得我該怎麼做？", "tag": "詢問建議", "level": 2, "survival": false, "homophone": ""}, {"en": "Maybe you should give it some time.", "zh": "也許你該給自己一點時間。", "tag": "建議", "level": 2, "survival": false, "homophone": "", "tip": "give it some time 是很常用的安慰語，意思是「別急，慢慢來」"}, {"en": "Have you thought about talking to a professional?", "zh": "你有想過去找專業人士聊聊嗎？", "tag": "建議", "level": 3, "survival": false, "homophone": ""}, {"en": "I'm here for you, no matter what.", "zh": "無論如何我都會陪著你。", "tag": "支持", "level": 1, "survival": true, "homophone": "愛母 西爾 弗 尤，諾 賣特 華特"}, {"en": "You're not alone in this.", "zh": "你不是一個人面對這件事。", "tag": "安慰", "level": 2, "survival": false, "homophone": ""}, {"en": "It's okay to cry, you know.", "zh": "想哭的話也沒關係。", "tag": "安慰", "level": 2, "survival": false, "homophone": ""}, {"en": "Just let it all out.", "zh": "把心裡的都說出來吧。", "tag": "鼓勵", "level": 2, "survival": false, "homophone": ""}, {"en": "I really appreciate you listening to me.", "zh": "真的很謝謝你願意聽我說。", "tag": "感謝", "level": 2, "survival": false, "homophone": ""}, {"en": "Thanks for always being there for me.", "zh": "謝謝你一直都在我身邊。", "tag": "感謝", "level": 1, "survival": true, "homophone": "山克斯 弗 歐爾為斯 逼引 淚兒 弗 密"}, {"en": "Let's talk again soon, okay?", "zh": "我們再找時間聊聊，好嗎？", "tag": "收尾", "level": 1, "survival": false, "homophone": ""}], "dialogue": {"title": "深夜的傾訴 - 交心談心", "youRole": "心情低落的你", "npcRole": "知心好友 Alex", "lines": [{"who": "you", "en": "Hey Alex, do you have a minute? I need to talk.", "zh": "嘿 Alex，你有空嗎？我需要跟你聊聊。"}, {"who": "npc", "en": "Of course. What's going on? You sound a little off.", "zh": "當然啊。怎麼了？你聽起來怪怪的。"}, {"who": "you", "en": "I've been feeling really down lately. I don't know what to do.", "zh": "我最近心情很低落，不知道該怎麼辦。"}, {"who": "npc", "en": "I'm sorry to hear that. Do you want to vent for a bit?", "zh": "聽到這樣我很難過。你想發洩一下情緒嗎？"}, {"who": "you", "en": "Yeah. Work's been stressful, and things with my family have been tense too.", "zh": "嗯。工作壓力很大，跟家人的關係也很緊繃。"}, {"who": "npc", "en": "That's a lot to carry. It's okay to cry, you know.", "zh": "這真的很沉重。想哭的話也沒關係喔。"}, {"who": "you", "en": "Thanks. What do you think I should do?", "zh": "謝謝。你覺得我該怎麼做？"}, {"who": "npc", "en": "Maybe you should give it some time, and take things one step at a time.", "zh": "也許你該給自己一點時間，一步一步慢慢來。"}, {"who": "npc", "en": "You're not alone in this. I'm here for you, no matter what.", "zh": "你不是一個人面對這件事。無論如何我都會陪著你。"}, {"who": "you", "en": "I really appreciate you listening to me tonight.", "zh": "真的很謝謝你今晚願意聽我說。"}, {"who": "npc", "en": "Anytime. That's what friends are for.", "zh": "隨時都可以。這就是朋友的意義。"}, {"who": "you", "en": "Let's talk again soon, okay?", "zh": "我們再找時間聊聊，好嗎？"}]}}];
+const SCENARIOS = window.__SCENARIOS__;
+const REF = window.__REF__;
+const $ = s=>document.querySelector(s);
+const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const todayStr=()=>fmt(new Date());
+
+const BANDS={
+  all:{name:"一般",emoji:"🙂",desc:"全部關卡與難度",levels:[1,2,3],hide:[],big:false,homo:false},
+  senior:{name:"長輩",emoji:"👵",desc:"只留最基礎救命句、大字、諧音發音",levels:[1],hide:["dating","deep-talk","disagree"],big:true,homo:true},
+  kid:{name:"兒童",emoji:"🧒",desc:"藏大人關卡、大字＋諧音，只練簡單句",levels:[1,2],hide:["dating","deep-talk","disagree"],big:true,homo:true},
+  adult:{name:"成人",emoji:"💼",desc:"全部關卡與進階句，高效實用",levels:[1,2,3],hide:[],big:false,homo:false}
+};
+function band(){return BANDS[S.band]||BANDS.all}
+function scenList(){return SCENARIOS.filter(sc=>!band().hide.includes(sc.id))}
+function phraseOK(p){return band().levels.includes(p.level||2)||p.survival}
+function visPhrases(sc){return sc.phrases.map((p,i)=>({p,i})).filter(o=>phraseOK(o.p))}
+
+const G = JSON.parse(localStorage.getItem('social_en_global')||'null') || {
+  profiles:[{id:'p1',name:'我',emoji:'🙂'}], current:'p1', dark:false
+};
+function saveG(){localStorage.setItem('social_en_global',JSON.stringify(G))}
+
+let S;
+function pKey(id){return 'social_en_'+id}
+function loadProfile(id){
+  S = JSON.parse(localStorage.getItem(pKey(id))||'null') || {};
+  S.cards=S.cards||{}; S.favs=S.favs||[]; S.streakDates=S.streakDates||[]; S.dailyCount=S.dailyCount||{};
+  S.goal=S.goal||20; S.rate=S.rate||1.0; S.showZh=S.showZh!==false; S.band=S.band||'all'; S.big=!!S.big; S.badges=S.badges||[];
+}
+function saveS(){localStorage.setItem(pKey(G.current),JSON.stringify(S))}
+
+function cardKey(sid,i){return sid+'#'+i}
+function getCard(sid,i){const k=cardKey(sid,i);return S.cards[k]||(S.cards[k]={lvl:0,due:0,seen:0})}
+const SRS_DAYS=[0,1,2,4,8,16,30];
+function grade(sid,i,ok){
+  const c=getCard(sid,i);c.seen++;
+  if(ok){c.lvl=Math.min(6,c.lvl+1);c.due=Date.now()+SRS_DAYS[c.lvl]*864e5;}
+  else{c.lvl=Math.max(0,c.lvl-1);c.due=Date.now()+6e5;}
+  countStudy();saveS();
+}
+function countStudy(){const t=todayStr();S.dailyCount[t]=(S.dailyCount[t]||0)+1;if(!S.streakDates.includes(t))S.streakDates.push(t);}
+function streak(){
+  const set=new Set(S.streakDates);let n=0;const d=new Date();let key=todayStr();
+  if(!set.has(key)){d.setDate(d.getDate()-1);key=fmt(d);if(!set.has(key))return 0;}
+  while(set.has(key)){n++;d.setDate(d.getDate()-1);key=fmt(d);}
+  return n;
+}
+function totalStars(){let s=0;for(const k in S.cards)s+=S.cards[k].lvl;return s}
+function dueCards(){
+  const now=Date.now();const out=[];
+  scenList().forEach(sc=>visPhrases(sc).forEach(o=>{const c=S.cards[cardKey(sc.id,o.i)];if(c&&c.seen>0&&c.due<=now)out.push({sc,p:o.p,i:o.i});}));
+  return out;
+}
+function scenarioPct(sc){
+  const vis=visPhrases(sc);if(!vis.length)return 0;
+  let done=0;vis.forEach(o=>{const c=S.cards[cardKey(sc.id,o.i)];if(c&&c.lvl>=3)done++;});
+  return Math.round(done/vis.length*100);
+}
+
+let voice=null;
+function pickVoice(){const vs=speechSynthesis.getVoices();
+  voice=vs.find(v=>/en[-_]US/i.test(v.lang)&&/female|samantha|zira|aria|jenny/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;}
+if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function say(text,rate){
+  if(!('speechSynthesis'in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=rate||S.rate||1;if(voice)u.voice=voice;
+  speechSynthesis.speak(u);
+}
+
+let view='home';
+const VIEWS=['home','detail','sos','search','fav','profile'];
+function setNav(active){['home','review','sos','search','profile'].forEach(x=>{const b=$('#nav-'+x);if(b)b.classList.toggle('on',x===active)});}
+function go(v){
+  view=v;VIEWS.forEach(x=>$('#view-'+x).classList.toggle('hidden',x!==v));
+  setNav(v==='fav'?'':v);
+  if(v==='home')renderHome();
+  if(v==='sos')renderSOS();
+  if(v==='fav')renderFav();
+  if(v==='profile')renderProfile();
+  if(v==='search'){$('#searchInput').value='';$('#searchRes').innerHTML='';setTimeout(()=>$('#searchInput').focus(),100)}
+  window.scrollTo(0,0);
+}
+
+function renderTopStats(){
+  const p=G.profiles.find(x=>x.id===G.current);
+  $('#profChip').textContent=(p?p.emoji+' '+p.name:'👤')+' · '+band().name;
+  $('#stStreak').textContent=streak();$('#stStars').textContent=totalStars();
+  $('#stToday').textContent=S.dailyCount[todayStr()]||0;$('#stGoal').textContent=S.goal;
+  $('#stDue').textContent=dueCards().length;
+}
+function renderHome(){
+  renderTopStats();
+  const due=dueCards().length,done=S.dailyCount[todayStr()]||0;
+  let b='';
+  if(due>0)b+=`<div class="banner rev"><div class="big">🔁</div><div class="t"><b>今天有 ${due} 張卡該複習</b><small>趁記憶還在時複習最有效</small></div><button class="go" onclick="startReview()">開始</button></div>`;
+  if(done<S.goal)b+=`<div class="banner"><div class="big">🎯</div><div class="t"><b>今日進度 ${done}/${S.goal}</b><small>再練 ${S.goal-done} 張就達標，維持連續打卡 🔥</small></div><button class="go" onclick="startDaily()">今日練習</button></div>`;
+  else b+=`<div class="banner"><div class="big">🎉</div><div class="t"><b>今日目標達成！${streak()} 天連續</b><small>還想練可繼續挑戰任一關卡</small></div></div>`;
+  b+=`<div class="banner sos"><div class="big">🆘</div><div class="t"><b>救命短句・出國隨身</b><small>報案電話、過敏發作、被扒、迷路…一頁搞定</small></div><button class="go" onclick="go('sos')">打開</button></div>`;
+  $('#dailyBanner').innerHTML=b;
+  const list=scenList();
+  $('#gridTitle').textContent=`🗺️ 情境關卡（${band().emoji} ${band().name}模式 · ${list.length} 關）`;
+  $('#grid').innerHTML=list.map(sc=>{
+    const pct=scenarioPct(sc);
+    return `<button class="scard" onclick="openScenario('${sc.id}')">
+      <div class="ico">${sc.icon}</div>
+      ${pct>=100?'<div class="done-badge">🏅</div>':pct>0?`<div class="pct">${pct}%</div>`:''}
+      <div class="nm">${sc.title}</div><div class="en">${sc.titleEn}</div>
+      <div class="desc">${sc.desc||''}</div>
+      <div class="pbar"><i style="width:${pct}%"></i></div></button>`;
+  }).join('');
+}
+
+function renderSOS(){
+  renderTopStats();setNav('sos');
+  const surv=[];scenList().forEach(sc=>sc.phrases.forEach((p,i)=>{if(p.survival)surv.push({sc,p,i})}));
+  let h=`<div class="section-title">🆘 救命 & 生存短句</div>
+    <p style="color:var(--sub);font-size:.82rem;margin:0 4px 10px">最該先學會的關鍵句，短到能背、能指著講。點 🔊 聽發音。</p>`;
+  h+=surv.map(o=>`<div class="pitem sos-item"><div class="body">
+      <div class="en">${o.p.en}</div><div class="zh">${o.p.zh}</div>
+      ${o.p.homophone?`<div class="homo">🗣️ ${o.p.homophone}</div>`:''}
+      <div class="metarow"><span style="font-size:.7rem;color:var(--sub)">${o.sc.icon} ${o.sc.title}</span></div>
+    </div><div class="acts"><button class="rbtn" onclick="say(${esc(o.p.en)})">🔊</button></div></div>`).join('');
+  $('#view-sos').innerHTML=h;
+}
+
+let curScenario=null, curTag='全部';
+function openScenario(id){
+  curScenario=SCENARIOS.find(s=>s.id===id);curTag='全部';view='detail';
+  VIEWS.forEach(x=>$('#view-'+x).classList.toggle('hidden',x!=='detail'));setNav('');
+  renderDetail();window.scrollTo(0,0);
+}
+const NUMRE=/\b(\d[\d:.,]*|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|midnight|noon)\b/i;
+function hasNumbers(sc){return sc.phrases.some(p=>phraseOK(p)&&NUMRE.test(p.en))}
+function renderDetail(){
+  const sc=curScenario;
+  const vis=visPhrases(sc);
+  const tags=['全部',...new Set(vis.map(o=>o.p.tag).filter(Boolean))];
+  const surv=vis.filter(o=>o.p.survival);
+  const list=vis.filter(o=>curTag==='全部'||o.p.tag===curTag);
+  const has=k=>sc[k]&&sc[k].length;
+  let modes=`
+    ${has('words')?`<button class="mode" onclick="startWords()"><div class="mi">📇</div><div class="ml">單字暖身</div></button>`:''}
+    <button class="mode" onclick="startMode('learn')"><div class="mi">📖</div><div class="ml">學習卡</div></button>
+    <button class="mode" onclick="startMode('listen')"><div class="mi">🎧</div><div class="ml">聽力</div></button>
+    <button class="mode" onclick="startMode('scramble')"><div class="mi">🧩</div><div class="ml">拼句</div></button>
+    <button class="mode" onclick="startMode('translate')"><div class="mi">✍️</div><div class="ml">中翻英</div></button>
+    <button class="mode" onclick="startMode('shadow')"><div class="mi">🎤</div><div class="ml">跟讀</div></button>
+    ${hasNumbers(sc)?`<button class="mode" onclick="startMode('dictation')"><div class="mi">🔢</div><div class="ml">聽數字</div></button>`:''}
+    ${has('patterns')?`<button class="mode" onclick="startPatterns()"><div class="mi">🔑</div><div class="ml">句型</div></button>`:''}
+    ${sc.dialogue&&sc.dialogue.lines&&sc.dialogue.lines.length?`<button class="mode" onclick="startRoleplay()"><div class="mi">🎭</div><div class="ml">角色扮演</div></button>`:''}
+    ${sc.dialogue&&sc.dialogue.lines&&sc.dialogue.lines.length?`<button class="mode" onclick="startRespond()"><div class="mi">💬</div><div class="ml">開放應答</div></button>`:''}`;
+  $('#view-detail').innerHTML=`
+    <button class="back" onclick="go('home')">‹ 返回</button>
+    <div class="detail-head"><div class="ico">${sc.icon}</div><h2>${sc.title}</h2><div class="en">${sc.titleEn} · ${vis.length} 句</div></div>
+    <div class="modes">${modes}</div>
+    ${surv.length?`<div class="section-title" style="margin-top:6px">🆘 這關的救命短句</div>${surv.map(o=>phraseItem(sc,o.p,o.i)).join('')}`:''}
+    <div class="section-title">📋 全部句子</div>
+    <div class="tagbar">${tags.map(t=>`<button class="tg ${t===curTag?'on':''}" onclick="setTag('${t}')">${t}</button>`).join('')}</div>
+    <div>${list.map(o=>phraseItem(sc,o.p,o.i)).join('')}</div>`;
+}
+function setTag(t){curTag=t;renderDetail()}
+function stars(lvl){return '★'.repeat(lvl)+'☆'.repeat(Math.max(0,5-lvl))}
+function phraseItem(sc,p,i){
+  const c=S.cards[cardKey(sc.id,i)];const lvl=c?Math.min(5,c.lvl):0;
+  const fav=S.favs.includes(cardKey(sc.id,i));
+  const showHomo=(band().homo||p.survival)&&p.homophone;
+  return `<div class="pitem ${p.survival?'sos-item':''}">
+    <div class="body">
+      <div class="en">${p.en}</div><div class="zh">${p.zh}</div>
+      ${showHomo?`<div class="homo">🗣️ ${p.homophone}</div>`:''}
+      ${p.tip?`<div class="tip">💡 ${p.tip}</div>`:''}
+      <div class="metarow"><span class="lv lv${p.level||2}">${['','A1','A2','B1+'][p.level||2]}</span>${p.survival?'<span style="font-size:.62rem;color:var(--sos);font-weight:800">🆘 救命</span>':''}<span class="stars">${stars(lvl)}</span></div>
+    </div>
+    <div class="acts">
+      <button class="rbtn" onclick="say(${esc(p.en)})">🔊</button>
+      <button class="rbtn fav ${fav?'on':''}" onclick="toggleFav('${sc.id}',${i},this)">${fav?'★':'☆'}</button>
+    </div></div>`;
+}
+function toggleFav(sid,i,el){
+  const k=cardKey(sid,i);const idx=S.favs.indexOf(k);
+  if(idx>=0){S.favs.splice(idx,1);el.classList.remove('on');el.textContent='☆';}
+  else{S.favs.push(k);el.classList.add('on');el.textContent='★';heart(el);}
+  saveS();
+}
+
+function renderFav(){
+  renderTopStats();setNav('');
+  if(!S.favs.length){$('#favList').innerHTML=`<div class="emptybox"><div class="e">⭐</div>還沒有收藏<br>在句子右邊點 ☆ 就能收藏常用句</div>`;return}
+  $('#favList').innerHTML=S.favs.map(k=>{const[sid,i]=k.split('#');const sc=SCENARIOS.find(s=>s.id===sid);if(!sc||!sc.phrases[+i])return'';return phraseItem(sc,sc.phrases[+i],+i);}).join('');
+}
+
+function doSearch(q){
+  q=q.trim().toLowerCase();if(!q){$('#searchRes').innerHTML='';return}
+  const hits=[];
+  SCENARIOS.forEach(sc=>sc.phrases.forEach((p,i)=>{if(p.en.toLowerCase().includes(q)||p.zh.includes(q)||(p.tip||'').toLowerCase().includes(q))hits.push({sc,p,i});}));
+  if(!hits.length){$('#searchRes').innerHTML=`<div class="emptybox"><div class="e">🔍</div>找不到「${q}」</div>`;return}
+  $('#searchRes').innerHTML=`<div class="section-title" style="margin-top:4px">找到 ${hits.length} 句</div>`+
+    hits.slice(0,60).map(o=>`<div style="font-size:.7rem;color:var(--sub);margin:8px 2px 2px">${o.sc.icon} ${o.sc.title}</div>`+phraseItem(o.sc,o.p,o.i)).join('');
+}
+
+let Q=null;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function scenItems(sc,filter){let it=visPhrases(sc).map(o=>({sc,p:o.p,i:o.i}));if(filter)it=it.filter(filter);return shuffle(it);}
+function buildQueue(mode,sc,filter){return{mode,items:scenItems(sc,filter),idx:0,correct:0,sid:sc.id};}
+
+function startMode(mode){
+  let filter=null;
+  if(mode==='dictation')filter=o=>NUMRE.test(o.p.en);
+  Q=buildQueue(mode,curScenario,filter);
+  if(!Q.items.length){toast('這個模式在此關沒有適合的句子');return}
+  renderCard();
+}
+function startDaily(){
+  const pool=[];const now=Date.now();
+  scenList().forEach(sc=>visPhrases(sc).forEach(o=>{const c=S.cards[cardKey(sc.id,o.i)];const pr=(!c)?1:(c.due<=now?0:2);pool.push({sc,p:o.p,i:o.i,pr,due:c?c.due:0});}));
+  pool.sort((a,b)=>a.pr-b.pr||a.due-b.due);
+  Q={mode:'learn',items:shuffle(pool.slice(0,Math.max(S.goal,10))),idx:0,correct:0,sid:null,daily:true};renderCard();
+}
+function startReview(){
+  const due=dueCards();if(!due.length){toast('太棒了！目前沒有待複習的卡 🎉');return}
+  Q={mode:'listen',items:shuffle(due),idx:0,correct:0,sid:null,review:true};renderCard();
+}
+function closeOverlay(){$('#overlayMount').innerHTML='';Q=null;awardBadges();
+  if(view==='detail')renderDetail();else if(view==='fav')renderFav();else if(view==='sos')renderSOS();else renderHome();renderTopStats();}
+
+function ovShell(inner,foot){
+  const pct=Q&&Q.items.length?Math.round(Q.idx/Q.items.length*100):0;
+  const cnt=Q?`${Math.min(Q.idx+1,Q.items.length)}/${Q.items.length}`:'';
+  return `<div class="overlay"><div class="ovhead"><button class="x" onclick="closeOverlay()">✕</button><div class="ovprog"><i style="width:${pct}%"></i></div><div class="cnt">${cnt}</div></div><div class="ovbody" id="ovbody">${inner}</div><div class="ovfoot" id="ovfoot">${foot||''}</div></div>`;
+}
+function renderCard(){
+  if(!Q)return;if(Q.idx>=Q.items.length)return finishSession();
+  ({learn:cardLearn,listen:cardListen,scramble:cardScramble,translate:cardTranslate,shadow:cardShadow,dictation:cardDictation}[Q.mode])();
+}
+
+function cardLearn(){
+  const{sc,p}=Q.items[Q.idx];
+  const showHomo=(band().homo||p.survival)&&p.homophone;
+  const inner=`<div class="flash"><div class="card3d">
+      <div class="big-en">${p.en}</div>
+      <div id="zhpart" class="${S.showZh?'':'hidden'}"><div class="big-zh">${p.zh}</div>${showHomo?`<div class="homo2">🗣️ ${p.homophone}</div>`:''}${p.tip?`<div class="tip2" style="margin-top:10px">💡 ${p.tip}</div>`:''}</div>
+    </div>
+    <button class="speak" onclick="say(${esc(p.en)})">🔊 播放發音</button>
+    <div class="tapkuce">${sc.icon} ${sc.title}${p.tag?' · '+p.tag:''} · <span class="lv lv${p.level||2}">${['','A1','A2','B1+'][p.level||2]}</span></div></div>`;
+  $('#overlayMount').innerHTML=ovShell(inner,`<button class="pbtn bad" onclick="learnNext(false)">🔁 再練</button><button class="pbtn good" onclick="learnNext(true)">✓ 我會了</button>`);
+  say(p.en);
+}
+function learnNext(ok){const it=Q.items[Q.idx];grade(it.sc.id,it.i,ok);if(ok)Q.correct++;Q.idx++;renderCard();}
+
+function cardListen(){
+  const{p}=Q.items[Q.idx];const opts=makeOptions(p,'zh');
+  const inner=`<div style="text-align:center;margin:20px 0"><button class="mic" style="width:78px;height:78px;font-size:32px;margin:0 auto" onclick="say(${esc(p.en)})">🔊</button><div class="qsub" style="margin-top:16px">聽英文，選出正確的中文意思</div></div><div id="opts">${opts.map(o=>`<button class="opt" onclick="pickOpt(this,${o.correct})">${o.text}</button>`).join('')}</div>`;
+  $('#overlayMount').innerHTML=ovShell(inner,'');say(p.en);
+}
+function cardTranslate(){
+  const{p}=Q.items[Q.idx];const opts=makeOptions(p,'en');
+  const inner=`<div class="qword">${p.zh}</div><div class="qsub">選出正確的英文說法</div><div id="opts">${opts.map(o=>`<button class="opt" onclick="pickOpt(this,${o.correct})">${o.text}</button>`).join('')}</div>`;
+  $('#overlayMount').innerHTML=ovShell(inner,'');
+}
+function makeOptions(p,field){
+  const all=[];SCENARIOS.forEach(sc=>sc.phrases.forEach(x=>all.push(x)));
+  const wrong=shuffle(all.filter(x=>x[field]!==p[field])).slice(0,3);
+  return shuffle([{text:p[field],correct:true},...wrong.map(w=>({text:w[field],correct:false}))]);
+}
+function pickOpt(el,correct){
+  if(el.parentElement.dataset.done)return;el.parentElement.dataset.done=1;
+  const cur=Q.items[Q.idx];const field=Q.mode==='listen'?'zh':'en';
+  [...el.parentElement.children].forEach(b=>b.style.pointerEvents='none');
+  if(correct){el.classList.add('ok');Q.correct++;grade(cur.sc.id,cur.i,true);say(cur.p.en);
+    setTimeout(()=>{Q.idx++;renderCard()},750);
+  }else{
+    el.classList.add('no');grade(cur.sc.id,cur.i,false);
+    const target=Q.mode==='dictation'?el.parentElement.querySelector('.opt'):null;
+    [...el.parentElement.children].forEach(b=>{if(b.textContent===cur.p[field])b.classList.add('ok')});
+    showTeach(cur,el.textContent);say(cur.p.en);
+  }
+}
+function showTeach(cur,youAnswer){
+  const p=cur.p;
+  $('#ovbody').insertAdjacentHTML('beforeend',`<div class="teach">
+    <div class="r wrong">✗ 你選：${youAnswer}</div>
+    <div class="r right">✓ 正解：${Q.mode==='listen'?p.zh:p.en}</div>
+    <div style="font-size:.85rem;color:var(--sub);margin-top:4px">${p.en} — ${p.zh}</div>
+    ${p.tip?`<div class="tipbox">💡 ${p.tip}</div>`:''}</div>`);
+  $('#ovfoot').innerHTML=`<button class="pbtn ghost" onclick="say(${esc(p.en)})">🔊 再聽</button><button class="pbtn" onclick="Q.idx++;renderCard()">下一題 ›</button>`;
+  $('#ovbody').scrollTop=$('#ovbody').scrollHeight;
+}
+
+function extractNum(en){const m=en.match(NUMRE);return m?m[0]:null;}
+function cardDictation(){
+  const{p}=Q.items[Q.idx];const num=extractNum(p.en)||'';
+  const masked=p.en.replace(num,'＿＿＿');
+  const distract=shuffle(['2','5','10','12','20','30','50','100','half past ten','four','noon','midnight'].filter(x=>x.toLowerCase()!==num.toLowerCase())).slice(0,3);
+  const opts=shuffle([{text:num,correct:true},...distract.map(d=>({text:d,correct:false}))]);
+  const inner=`<div style="text-align:center;margin:14px 0"><button class="mic" style="width:70px;height:70px;font-size:28px;margin:0 auto" onclick="say(${esc(p.en)})">🔊</button><div class="qsub" style="margin-top:14px">聽句子，選出你聽到的數字/時間</div></div>
+    <div class="qword" style="font-size:1.15rem;color:var(--sub)">${masked}</div>
+    <div id="opts" style="margin-top:10px">${opts.map(o=>`<button class="opt" style="text-align:center" onclick="pickOpt(this,${o.correct})">${o.text}</button>`).join('')}</div>`;
+  $('#overlayMount').innerHTML=ovShell(inner,'');say(p.en);
+}
+
+let scz={};
+function cardScramble(){
+  const{p}=Q.items[Q.idx];
+  const words=p.en.replace(/([.,!?;])/g,' $1').split(/\s+/).filter(Boolean);
+  scz={words,target:[],pool:shuffle(words.map((w,idx)=>({w,idx})))};drawScramble(p);
+}
+function drawScramble(p){
+  const inner=`<div class="qsub" style="margin-top:6px">把單字排成正確的英文句子</div>
+    <div class="qword" style="font-size:1.15rem;color:var(--sub);margin:4px 0 14px">${p.zh}</div>
+    <div class="scz-target" id="sczT">${scz.target.map((t,k)=>`<button class="tok" onclick="sczBack(${k})">${t.w}</button>`).join('')||'<span style="color:var(--sub);align-self:center">👇 從下方點選單字</span>'}</div>
+    <div class="scz-pool" id="sczP">${scz.pool.map((t,k)=>`<button class="tok inpool" onclick="sczPick(${k})">${t.w}</button>`).join('')}</div>`;
+  $('#overlayMount').innerHTML=ovShell(inner,`<button class="pbtn ghost" onclick="say(${esc(p.en)})">🔊 提示</button><button class="pbtn" onclick="sczCheck()" ${scz.pool.length?'disabled':''}>檢查</button>`);
+}
+function sczPick(k){scz.target.push(scz.pool.splice(k,1)[0]);drawScramble(Q.items[Q.idx].p);}
+function sczBack(k){scz.pool.push(scz.target.splice(k,1)[0]);drawScramble(Q.items[Q.idx].p);}
+function sczCheck(){
+  const cur=Q.items[Q.idx];const correct=scz.target.map(t=>t.w).join(' ')===scz.words.join(' ');const T=$('#sczT');
+  if(correct){T.classList.add('ok');Q.correct++;grade(cur.sc.id,cur.i,true);say(cur.p.en);setTimeout(()=>{Q.idx++;renderCard()},900);}
+  else{T.classList.add('err');grade(cur.sc.id,cur.i,false);setTimeout(()=>T.classList.remove('err'),400);
+    setTimeout(()=>{$('#ovbody').insertAdjacentHTML('beforeend',`<div class="teach"><div class="r right">✓ 正解：${cur.p.en}</div><div style="font-size:.85rem;color:var(--sub);margin-top:3px">${cur.p.zh}</div>${cur.p.tip?`<div class="tipbox">💡 ${cur.p.tip}</div>`:''}</div>`);$('#ovfoot').innerHTML=`<button class="pbtn ghost" onclick="say(${esc(cur.p.en)})">🔊 聽</button><button class="pbtn" onclick="Q.idx++;renderCard()">下一題 ›</button>`;$('#ovbody').scrollTop=9e9;},450);}
+}
+
+let recog=null,recSupported=('webkitSpeechRecognition'in window)||('SpeechRecognition'in window);
+function cardShadow(){
+  const{p}=Q.items[Q.idx];
+  const inner=`<div class="mic-wrap">
+    <div class="big-en" style="font-size:1.5rem;font-weight:800">${p.en}</div>
+    <div class="big-zh" style="color:var(--sub)">${p.zh}</div>
+    <button class="mic" id="micBtn" onclick="toggleRec()">${recSupported?'🎤':'🚫'}</button>
+    <div class="heard" id="heard">${recSupported?'點麥克風，唸出上面的句子':'此裝置不支援語音辨識，改用聽發音跟著唸'}</div>
+    <div id="scoreArea"></div></div>`;
+  const foot=recSupported?`<button class="pbtn ghost" onclick="say(${esc(p.en)})">🔊 聽範例</button><button class="pbtn" onclick="Q.idx++;renderCard()">跳過 ›</button>`
+    :`<button class="pbtn ghost" onclick="say(${esc(p.en)})">🔊 聽範例</button><button class="pbtn good" onclick="learnNext(true)">✓ 我唸了</button>`;
+  $('#overlayMount').innerHTML=ovShell(inner,foot);setTimeout(()=>say(p.en),200);
+}
+function toggleRec(){
+  if(!recSupported)return;const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(recog){recog.stop();return;}
+  recog=new R();recog.lang='en-US';recog.interimResults=false;recog.maxAlternatives=1;
+  $('#micBtn').classList.add('rec');$('#heard').textContent='🔴 聽你說…請開口';
+  recog.onresult=e=>scoreShadow(e.results[0][0].transcript);
+  recog.onerror=()=>{$('#heard').textContent='沒聽清楚，再試一次';};
+  recog.onend=()=>{const m=$('#micBtn');if(m)m.classList.remove('rec');recog=null;};
+  try{recog.start();}catch(e){}
+}
+function normalize(s){return s.toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim()}
+function scoreShadow(said){
+  const cur=Q.items[Q.idx];const tw=normalize(cur.p.en).split(' '),hw=new Set(normalize(said).split(' '));
+  let hit=0;tw.forEach(w=>{if(hw.has(w))hit++});const score=Math.round(hit/tw.length*100);
+  // 逐字標記：綠＝機器聽到了、紅波浪＝沒聽到（可點聽慢速）
+  const marked=cur.p.en.split(/(\s+)/).map(tok=>{const w=normalize(tok);if(!w)return tok;return hw.has(w)?`<span class="wok">${tok}</span>`:`<span class="wmiss">${tok}</span>`;}).join('');
+  const missed=tw.filter(w=>!hw.has(w));
+  $('#heard').innerHTML=`辨識到：<b>${said}</b>`;
+  const cls=score>=80?'w-good':score>=50?'w-mid':'w-bad';
+  const msg=score>=80?'這句大部分字都聽清楚了 🎉':'紅字是機器沒聽到的，點一下聽慢速、再唸一次：';
+  const chips=(score<80&&missed.length)?missed.map(w=>`<button class="misschip" onclick="say('${w}')">🔊 ${w}</button>`).join(''):'';
+  $('#scoreArea').innerHTML=`<div class="shadowline">${marked}</div>`+
+    `<div class="scorebig ${cls}">${score}<span style="font-size:1.05rem"> % 字被聽到</span></div>`+
+    `<div class="qsub">${msg}${chips}</div>`+
+    `<div class="fbnote">※ 這是「單字有沒有被聽到」的比例，不是發音準不準的評分。想聽真人示範可點下方「範例」。</div>`;
+  const ok=score>=60;grade(cur.sc.id,cur.i,ok);if(ok)Q.correct++;if(score>=80)heart($('#micBtn'));
+  $('#ovfoot').innerHTML=`<button class="pbtn ghost" onclick="say(${esc(cur.p.en)})">🔊 範例</button><button class="pbtn" onclick="Q.idx++;renderCard()">下一題 ›</button>`;
+}
+
+let WQ=null;
+function startWords(){WQ={words:shuffle(curScenario.words.slice()),idx:0,sc:curScenario};drawWord();}
+function drawWord(){
+  if(WQ.idx>=WQ.words.length){WQ=null;$('#overlayMount').innerHTML='';renderDetail();toast('單字暖身完成！開始練句子吧 💪');return;}
+  const w=WQ.words[WQ.idx];const pct=Math.round(WQ.idx/WQ.words.length*100);
+  const inner=`<div class="flash"><div class="wico">${w.ico||'🔤'}</div><div class="card3d" style="min-height:150px"><div class="big-en">${w.en}</div><div class="big-zh">${w.zh}</div></div><button class="speak" onclick="say(${esc(w.en)})">🔊 播放</button></div>`;
+  $('#overlayMount').innerHTML=`<div class="overlay"><div class="ovhead"><button class="x" onclick="WQ=null;closeOverlay()">✕</button><div class="ovprog"><i style="width:${pct}%"></i></div><div class="cnt">📇 ${WQ.idx+1}/${WQ.words.length}</div></div><div class="ovbody">${inner}</div><div class="ovfoot"><button class="pbtn" onclick="WQ.idx++;drawWord()">下一個 ›</button></div></div>`;
+  say(w.en);
+}
+
+let PQ=null;
+function startPatterns(){PQ={pats:curScenario.patterns.slice(),idx:0,sc:curScenario,pick:0};drawPattern();}
+function drawPattern(){
+  if(PQ.idx>=PQ.pats.length){PQ=null;$('#overlayMount').innerHTML='';renderDetail();toast('句型練習完成！一個框架能講很多句 🔑');return;}
+  const pat=PQ.pats[PQ.idx];const slot=pat.slots[PQ.pick]||pat.slots[0];
+  const full=pat.en.replace('___',slot);
+  const inner=`<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px">
+    <div class="patcard"><div class="frame">${pat.en.replace('___',`<span class="slot">${slot}</span>`)}</div><div style="color:var(--sub)">${pat.zh}</div>
+      <button class="speak" style="margin-top:14px" onclick="say(${esc(full)})">🔊 ${full}</button></div>
+    <div style="text-align:center;color:var(--sub);font-size:.85rem">👇 換不同的字，同一句型變出很多句</div>
+    <div class="slotbtns">${pat.slots.map((s,k)=>`<button class="slotbtn ${k===PQ.pick?'on':''}" onclick="PQ.pick=${k};drawPattern()">${s}</button>`).join('')}</div></div>`;
+  $('#overlayMount').innerHTML=`<div class="overlay"><div class="ovhead"><button class="x" onclick="PQ=null;closeOverlay()">✕</button><div class="ovprog"><i style="width:${Math.round(PQ.idx/PQ.pats.length*100)}%"></i></div><div class="cnt">🔑 ${PQ.idx+1}/${PQ.pats.length}</div></div><div class="ovbody">${inner}</div><div class="ovfoot"><button class="pbtn" onclick="PQ.idx++;PQ.pick=0;drawPattern()">下一個句型 ›</button></div></div>`;
+  say(full);
+}
+
+let RP=null;
+function pickLine(l){if(l.who==='npc'&&l.alt&&l.alt.length&&Math.random()<0.5){const a=l.alt[Math.floor(Math.random()*l.alt.length)];return{who:'npc',en:a.en,zh:a.zh};}return l;}
+function startRoleplay(){
+  const d=curScenario.dialogue;if(!d||!d.lines||!d.lines.length){toast('這關暫無對話');return}
+  RP={d,step:0,resolved:d.lines.map(pickLine)};drawRoleplay();
+}
+function drawRoleplay(){
+  const{d,resolved}=RP;const shown=resolved.slice(0,RP.step);
+  const chat=shown.map(l=>`<div class="bubble ${l.who}">${l.en}<div class="z">${l.zh}</div></div>`).join('');
+  let foot='',bottom='';
+  if(RP.step>=resolved.length){foot=`<button class="pbtn ghost" onclick="closeOverlay()">完成</button><button class="pbtn" onclick="RP.step=0;RP.resolved=RP.d.lines.map(pickLine);drawRoleplay()">再玩一次</button>`;}
+  else{const nxt=resolved[RP.step];
+    if(nxt.who==='you'){bottom=`<div class="roleask">👉 換你了（你扮演：${d.youRole}）— 試著說出來，再看解答</div>`;foot=`<button class="pbtn ghost" onclick="say(${esc(nxt.en)})">🔊 提示</button><button class="pbtn" onclick="rpAdvance()">看解答 ›</button>`;}
+    else{bottom=`<div class="roleask">🗣️ ${d.npcRole} 說話中…</div>`;foot=`<button class="pbtn" onclick="rpAdvance()">繼續 ›</button>`;}}
+  const inner=`<div style="text-align:center;margin-bottom:6px"><b>${d.title}</b><div class="qsub">你：${d.youRole} ｜ 對方：${d.npcRole}</div></div><div class="chat">${chat||'<div class="qsub">點「繼續」展開對話</div>'}</div>${bottom}`;
+  $('#overlayMount').innerHTML=`<div class="overlay"><div class="ovhead"><button class="x" onclick="closeOverlay()">✕</button><div class="ovprog"><i style="width:${Math.round(RP.step/resolved.length*100)}%"></i></div><div class="cnt">🎭</div></div><div class="ovbody">${inner}</div><div class="ovfoot">${foot}</div></div>`;
+  const last=shown[shown.length-1];if(last&&last.who==='npc')say(last.en);
+  const body=$('.chat');if(body)body.scrollTop=body.scrollHeight;
+}
+function rpAdvance(){const l=RP.resolved[RP.step];RP.step++;if(l.who==='you'){countStudy();saveS();}drawRoleplay();}
+
+let RS=null;
+function startRespond(){
+  const d=curScenario.dialogue;if(!d||!d.lines)return;
+  const pairs=[];for(let i=0;i<d.lines.length-1;i++){if(d.lines[i].who==='npc'&&d.lines[i+1].who==='you')pairs.push({npc:d.lines[i],you:d.lines[i+1]});}
+  if(!pairs.length){toast('這關暫無適合的應答練習');return}
+  RS={pairs:shuffle(pairs),idx:0};drawRespond(false);
+}
+function drawRespond(revealed){
+  if(RS.idx>=RS.pairs.length){RS=null;$('#overlayMount').innerHTML='';renderDetail();toast('應答練習完成！臨場反應更快了 💬');return;}
+  const pr=RS.pairs[RS.idx];const pct=Math.round(RS.idx/RS.pairs.length*100);
+  let body=`<div style="flex:1;display:flex;flex-direction:column;gap:14px;justify-content:center">
+    <div class="qsub">🗣️ 對方對你說（點播放來聽）：</div>
+    <div class="bubble npc" style="max-width:100%">${pr.npc.en}<div class="z">${pr.npc.zh}</div></div>
+    <div style="text-align:center"><button class="speak" onclick="say(${esc(pr.npc.en)})">🔊 再聽一次</button></div>`;
+  if(!revealed){body+=`<div class="roleask">👉 換你回答！${recSupported?'點麥克風說說看':'想好你會怎麼回，再看參考'}</div>
+    ${recSupported?`<div style="text-align:center"><button class="mic" style="width:74px;height:74px;font-size:30px;margin:0 auto" id="rsMic" onclick="rsRec()">🎤</button><div class="heard" id="rsHeard"></div></div>`:''}`;}
+  else{body+=`<div class="roleask">✅ 參考回答：</div><div class="bubble you" style="max-width:100%;align-self:flex-end">${pr.you.en}<div class="z">${pr.you.zh}</div></div>`;}
+  body+='</div>';
+  const foot=revealed?`<button class="pbtn ghost" onclick="say(${esc(pr.you.en)})">🔊 聽參考</button><button class="pbtn" onclick="RS.idx++;countStudy();saveS();drawRespond(false)">下一題 ›</button>`
+    :`<button class="pbtn" onclick="drawRespond(true)">看參考回答 ›</button>`;
+  $('#overlayMount').innerHTML=`<div class="overlay"><div class="ovhead"><button class="x" onclick="RS=null;closeOverlay()">✕</button><div class="ovprog"><i style="width:${pct}%"></i></div><div class="cnt">💬 ${RS.idx+1}/${RS.pairs.length}</div></div><div class="ovbody">${body}</div><div class="ovfoot">${foot}</div></div>`;
+  say(pr.npc.en);
+}
+const RS_STOP=new Set('a an the to of for and or i you we it is are am was were be been do does did can could would will shall may my your our me us at in on this that these those with please yes no ok oh so'.split(' '));
+function rsRec(){
+  if(!recSupported)return;const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const rr=new R();rr.lang='en-US';rr.interimResults=false;
+  $('#rsMic').classList.add('rec');$('#rsHeard').textContent='🔴 聽你說…';
+  rr.onresult=e=>{
+    const said=e.results[0][0].transcript;const pr=RS.pairs[RS.idx];
+    const heard=new Set(normalize(said).split(' '));
+    const key=[...new Set(normalize(pr.you.en).split(' '))].filter(w=>w&&!RS_STOP.has(w));
+    const covered=key.filter(w=>heard.has(w)),missed=key.filter(w=>!heard.has(w));
+    const pct=key.length?Math.round(covered.length/key.length*100):100;
+    let fb=`辨識到：<b>${said}</b>`;
+    if(key.length){
+      if(pct>=60)fb+=`<br><span class="keyok">👍 重點都講到了（關鍵字 ${covered.length}/${key.length}）</span>`;
+      else fb+=`<br>還差關鍵字：${missed.map(w=>`<span class="wmiss">${w}</span>`).join(' ')}<br><span class="qsub">參考說法：${pr.you.en}</span>`;
+    }
+    fb+=`<div class="fbnote">※ 只檢查你有沒有講到重點字，不評發音；旅遊講得通最重要，說法不用跟參考一模一樣。</div>`;
+    $('#rsHeard').innerHTML=fb;
+  };
+  rr.onerror=()=>{$('#rsHeard').textContent='沒聽清楚，再試一次';};
+  rr.onend=()=>{const m=$('#rsMic');if(m)m.classList.remove('rec');};
+  try{rr.start();}catch(e){}
+}
+
+function finishSession(){
+  const total=Q.items.length,correct=Q.correct,pct=total?Math.round(correct/total*100):0;
+  const star=pct>=90?'🏆':pct>=70?'🌟':'👍';confetti();
+  const inner=`<div class="flash"><div style="font-size:64px">${star}</div><div class="big-en">完成！</div>
+    <div class="card3d" style="min-height:auto;gap:8px"><div style="font-size:.95rem;color:var(--sub)">答對 <b style="color:var(--good);font-size:1.4rem">${correct}</b> / ${total} 題</div>
+    <div style="font-size:.95rem;color:var(--sub)">今日累積 <b style="color:var(--sky)">${S.dailyCount[todayStr()]||0}</b> 張 · 連續 <b style="color:var(--gold)">${streak()}</b> 天 🔥</div></div></div>`;
+  $('#overlayMount').innerHTML=ovShell(inner,`<button class="pbtn ghost" onclick="closeOverlay()">完成</button>${Q.sid?`<button class="pbtn" onclick="restartSame()">再練一次</button>`:''}`);
+  saveS();awardBadges();
+}
+function restartSame(){const sc=SCENARIOS.find(s=>s.id===Q.sid);const m=Q.mode;Q=buildQueue(m,sc);renderCard();}
+
+const MILESTONES=[{id:'streak3',emoji:'🔥',name:'連續3天',test:()=>streak()>=3},{id:'streak7',emoji:'⚡',name:'連續7天',test:()=>streak()>=7},{id:'streak30',emoji:'👑',name:'連續30天',test:()=>streak()>=30},{id:'star50',emoji:'⭐',name:'50顆星',test:()=>totalStars()>=50},{id:'star200',emoji:'🌟',name:'200顆星',test:()=>totalStars()>=200},{id:'sos',emoji:'🆘',name:'救命達人',test:()=>{let n=0;SCENARIOS.forEach(sc=>sc.phrases.forEach((p,i)=>{if(p.survival){const c=S.cards[cardKey(sc.id,i)];if(c&&c.lvl>=3)n++}}));return n>=15}}];
+function earnedBadges(){
+  const got=new Set(S.badges);
+  SCENARIOS.forEach(sc=>{if(scenarioPct(sc)>=100)got.add('sc_'+sc.id);});
+  MILESTONES.forEach(m=>{if(m.test())got.add(m.id);});
+  return got;
+}
+function awardBadges(){
+  const got=earnedBadges();const fresh=[...got].filter(b=>!S.badges.includes(b));
+  if(fresh.length){S.badges=[...got];saveS();
+    const b=fresh[0];const sc=SCENARIOS.find(s=>'sc_'+s.id===b);const m=MILESTONES.find(x=>x.id===b);
+    toast('🏅 獲得徽章：'+(sc?sc.icon+' '+sc.title+'達人':(m?m.emoji+' '+m.name:'新成就')));confetti();
+  }
+}
+function renderBadges(){
+  const got=earnedBadges();
+  const scB=SCENARIOS.map(sc=>({emoji:sc.icon,name:sc.title,got:got.has('sc_'+sc.id)}));
+  const msB=MILESTONES.map(m=>({emoji:m.emoji,name:m.name,got:got.has(m.id)}));
+  const all=[...msB,...scB];
+  $('#badges').innerHTML=all.map(b=>`<div class="badge ${b.got?'got':''}"><div class="bi">${b.emoji}</div><div class="bn">${b.name}</div></div>`).join('');
+}
+
+function esc(s){return "'"+String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'"}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1800)}
+function heart(el){if(!el)return;const r=el.getBoundingClientRect();const h=document.createElement('div');h.className='pop-heart';h.textContent='❤️';h.style.left=r.left+r.width/2-15+'px';h.style.top=r.top+'px';document.body.appendChild(h);setTimeout(()=>h.remove(),1000)}
+function confetti(){for(let i=0;i<24;i++){const c=document.createElement('div');c.className='pop-heart';c.textContent=['🎉','⭐','✨','🎊','💙'][i%5];c.style.left=Math.random()*100+'vw';c.style.top=Math.random()*40+10+'vh';c.style.animationDelay=Math.random()*.3+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),1200)}}
+
+function renderProfile(){
+  renderTopStats();setNav('profile');
+  $('#profList').innerHTML=G.profiles.map(p=>`<button class="pill ${p.id===G.current?'on':''}" onclick="switchProfile('${p.id}')" ondblclick="renameProfile('${p.id}')">${p.emoji} ${p.name}${G.profiles.length>1?` <span onclick="event.stopPropagation();delProfile('${p.id}')" style="color:var(--bad);margin-left:4px">✕</span>`:''}</button>`).join('');
+  $('#bandSel').innerHTML=Object.keys(BANDS).map(k=>`<button class="bandopt ${S.band===k?'on':''}" onclick="setBand('${k}')"><b>${BANDS[k].emoji} ${BANDS[k].name}</b><small>${BANDS[k].desc}</small></button>`).join('');
+  renderBadges();
+  $('#goalView').textContent=S.goal;$('#rateView').textContent=S.rate.toFixed(1)+'×';
+  $('#swBig').classList.toggle('on',S.big);$('#swDark').classList.toggle('on',G.dark);$('#swZh').classList.toggle('on',S.showZh);
+  let seen=0,mastered=0,tot=0;
+  scenList().forEach(sc=>visPhrases(sc).forEach(o=>{tot++;const c=S.cards[cardKey(sc.id,o.i)];if(c&&c.seen)seen++;if(c&&c.lvl>=5)mastered++;}));
+  $('#progSummary').innerHTML=`
+    <div class="setrow"><div class="lab"><b>已學過</b><small>目前模式可見的句子</small></div><b style="color:var(--sky)">${seen} / ${tot}</b></div>
+    <div class="setrow"><div class="lab"><b>已精熟 ★★★★★</b></div><b style="color:var(--gold)">${mastered}</b></div>
+    <div class="setrow"><div class="lab"><b>收藏句數</b></div><b>${S.favs.length}</b></div>
+    <div class="setrow"><div class="lab"><b>連續打卡</b></div><b style="color:var(--bad)">${streak()} 天 🔥</b></div>`;
+}
+function setBand(k){S.band=k;S.big=BANDS[k].big;saveS();applyBig();renderProfile();toast(BANDS[k].emoji+' 已切換到「'+BANDS[k].name+'」模式');}
+function switchProfile(id){G.current=id;saveG();loadProfile(id);applyBig();renderProfile();}
+function addProfile(){const name=prompt('成員名字？（例：爸爸、小明、阿嬤）');if(!name)return;const emojis=['🙂','😎','🧑','👦','👧','👨','👩','👵','👴','🐣'];const id='p'+Date.now();G.profiles.push({id,name:name.trim().slice(0,6),emoji:emojis[G.profiles.length%emojis.length]});G.current=id;saveG();loadProfile(id);applyBig();renderProfile();renderTopStats();}
+function renameProfile(id){const p=G.profiles.find(x=>x.id===id);const n=prompt('改名字：',p.name);if(n){p.name=n.trim().slice(0,6);saveG();renderProfile()}}
+function delProfile(id){if(G.profiles.length<=1)return;if(!confirm('刪除這位成員與其進度？'))return;G.profiles=G.profiles.filter(p=>p.id!==id);localStorage.removeItem(pKey(id));if(G.current===id)G.current=G.profiles[0].id;saveG();loadProfile(G.current);applyBig();renderProfile();renderTopStats();}
+function setGoal(d){S.goal=Math.max(5,Math.min(100,S.goal+d));saveS();renderProfile();}
+function setRate(d){S.rate=Math.max(.5,Math.min(1.5,+(S.rate+d).toFixed(1)));saveS();$('#rateView').textContent=S.rate.toFixed(1)+'×';say('Hello, this is the speed.');}
+function toggleBig(){S.big=!S.big;saveS();applyBig();$('#swBig').classList.toggle('on',S.big);}
+function applyBig(){document.body.classList.toggle('big',S.big);}
+function toggleDark(){G.dark=!G.dark;saveG();applyDark();$('#swDark').classList.toggle('on',G.dark);}
+function applyDark(){document.documentElement.setAttribute('data-theme',G.dark?'dark':'light');document.querySelector('meta[name=theme-color]').content=G.dark?'#0b1220':'#db2777';}
+function toggleZh(){S.showZh=!S.showZh;saveS();$('#swZh').classList.toggle('on',S.showZh);}
+function resetProgress(){if(!confirm('清空此成員所有學習進度？此動作無法復原'))return;const keep={goal:S.goal,rate:S.rate,showZh:S.showZh,band:S.band,big:S.big};S={cards:{},favs:[],streakDates:[],dailyCount:{},badges:[],...keep};saveS();renderProfile();renderTopStats();}
+
+loadProfile(G.current);applyDark();applyBig();renderHome();
+
+/* ===== 離線快取 + 安裝到桌面 (PWA) ===== */
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+(function(){
+  var dp=null;
+  function iss(){return (window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
+  function iios(){return /iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
+  function ren(){var el=document.getElementById('installBar');if(!el)return;
+    if(iss()){el.innerHTML='';return;}
+    if(dp){el.innerHTML='<button class="ib" onclick="__inst()">📲 安裝到桌面（免開瀏覽器） ➕</button>';}
+    else if(iios()){el.innerHTML='<button class="ib sec" onclick="__instIOS()">📲 安裝到主畫面（iPad / iPhone） ›</button>';}
+    else{el.innerHTML='';}}
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;ren();});
+  window.addEventListener('appinstalled',function(){dp=null;ren();});
+  window.__inst=function(){if(!dp)return;dp.prompt();dp.userChoice.finally(function(){dp=null;ren();});};
+  window.__instIOS=function(){var el=document.getElementById('installBar');if(!el)return;el.innerHTML='<div class="tip">📲 <b>加到 iPad / iPhone 桌面：</b><br>1. 用 <b>Safari</b> 開啟本頁<br>2. 點「分享 ⬆️」<br>3. 往下找「<b>加入主畫面 ➕</b>」<br>4. 右上按「新增」完成<br><span class="x" onclick="__instClose()">知道了 ✓</span></div>';};
+  window.__instClose=function(){ren();};
+  ren();
+})();
+</script>
