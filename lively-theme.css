@@ -1,0 +1,14 @@
+/* 由 packages/lively/sync_lively.py 產生，請勿手改（改 apps.json 再重跑）。
+   913_social-english｜主題色相來源 #db2777｜engine=conv｜level=low */
+:root{--lv-engine:conv;--lv-level:low}
+html:not([data-theme="dark"]),html:not([data-theme="dark"]) body{
+  --lv-btn:#EC8DB7;--lv-btn-d:#D75B92;--lv-ink:#6B0F38;--lv-acc:#C02067;
+  --lv-soft:#FBE4EE;--lv-soft2:#F0C7D9;
+}
+html[data-theme="dark"],html[data-theme="dark"] body{
+  --lv-btn:#EC8DB7;--lv-btn-d:#D75B92;--lv-ink:#6B0F38;--lv-acc:#E873A7;
+  --lv-soft:#412531;--lv-soft2:#62374A;
+}
+@media (prefers-color-scheme:dark){html:not([data-theme]),html:not([data-theme]) body{
+  --lv-acc:#E873A7;--lv-soft:#412531;--lv-soft2:#62374A;
+}}
